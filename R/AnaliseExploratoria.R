@@ -24,6 +24,7 @@ chisq.test(table_ABCC2_RS2273697)
 #### df_chi2
 df_chi2 <- data.frame(matrix(ncol = 2, nrow = 0))
 colnames(df_chi2) <- c("Variante", "Chi-2")
+colnames_df <- colnames(df)
 
 #### Rodando teste para todas as variantes
 for(i in (2:160)){
