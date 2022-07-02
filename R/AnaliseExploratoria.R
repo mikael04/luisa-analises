@@ -40,14 +40,18 @@ for(i in (2:160)){
   testes_chi2 <- chisq.test(table(unlist(df[,1]), unlist(df[,i])), simulate.p.value = TRUE)
   df_chi2[i-1, ] = c(colnames_df[i], testes_chi2$p.value)
   ## Fisher
-  testes_fisher <- fisher.test(table(unlist(df[,1]), unlist(df[,i])), simulate.p.value = TRUE)
-  df_fisher[i-1, ] = c(colnames_df[i], testes_fisher$p.value)
+  tabela_fisher <- table(unlist(df[,1]), unlist(df[,i]))
+  if(ncol(tabela_fisher) > 1){
+    testes_fisher <- fisher.test(tabela_fisher, simulate.p.value = TRUE)
+    df_fisher[i-1, ] = c(colnames_df[i], testes_fisher$p.value)
+  }else{
+    df_fisher[i-1, ] = c(colnames_df[i], -1)
+  }
 }
 
 ### Investigando erro no for para o teste de fisher
-tabela_teste <- table(unlist(df[,1]), unlist(df[,i]))
-colnames_df[64]
-
+# tabela_teste <- table(unlist(df[,1]), unlist(df[,64]))
+# colnames_df[64]
 
 #### Ordenando por p-value
 df_chi2 <- df_chi2 |> 
