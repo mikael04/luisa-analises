@@ -49,13 +49,20 @@ for(i in (2:160)){
   }
 }
 
-### Investigando erro no for para o teste de fisher
-# tabela_teste <- table(unlist(df[,1]), unlist(df[,64]))
-# colnames_df[64]
-
 #### Ordenando por p-value
 df_chi2 <- df_chi2 |> 
   dplyr::arrange(Variante)
+
+## 1.2 Criando tabela Chi-2
+table_ABCC2_RS2273697
+colnames_df[2]
+
+df_aux <- df_full |> 
+  dplyr::select(PIORMB, ABCC2_rs2273697_MO, ABCC2_rs2273697_MA, ABCC2_rs2273697_MR, ABCC2_rs2273697_MD)
+
+## Lendo outra  tabela auxiliar
+
+df_modelos_genotipos <- readxl::read_xlsx("data-raw/modelos_genotipos.xlsx")
 
 # 2 - Criando modelo 
 
