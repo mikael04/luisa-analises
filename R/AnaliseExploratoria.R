@@ -8,6 +8,7 @@
 # 0 - Scripts e bibliotecas ----
 library(dplyr)
 source("R/fct_aux/func_remove_columns.R")
+source("R/fct_aux/func_tables.R")
 
 
 # 1 - Lendo Base de dados ----
@@ -55,45 +56,16 @@ for(i in (2:160)){
 df_chi2 <- df_chi2 |> 
   dplyr::arrange(Variante)
 
-## 1.2 Criando tabela Chi-2
+## 1.2 - Criando tabela Chi-2 ----
 
 df_modelos_genotipos <- data.frame(df_full[, 32], df_full[, 57:324])
 
-# df_rs17222723 <- data.frame(df_modelos_genotipos[, 1], df_modelos_genotipos[, 8:9])
+### 1.2.1 - Tabela para modelos aditivos
 
-df_geno_aditivo <- fct_remove_columns(df_modelos_genotipos, c("MR", "MD", "MU"))
+df_geno_aditivo <- df_modelos_genotipos |> 
+  dplyr::select(dplyr::ends_with(c("PIORMB", "MO")))
 
-df_geno_aditivo_test <- df_geno_aditivo[,1:3] |> 
-  dplyr::mutate(PIORMB = ifelse(PIORMB > 0, 1, 0)) |> 
-  dplyr::group_by(ABCC2_rs2273697_MO, PIORMB) |> 
-  dplyr::mutate(count = n()) |> 
-  dplyr::distinct(ABCC2_rs2273697_MO, PIORMB, .keep_all = T) |>
-  dplyr::select(-ABCC2_rs2273697_MA) |> 
-  dplyr::ungroup()
-
-df_geno_aditivo_test <- df_geno_aditivo_test |> 
-  dplyr::arrange(ABCC2_rs2273697_MO, PIORMB)
-
-
-df_aux <- df_geno_aditivo_test |> 
-  tidyr::pivot_wider(names_from = PIORMB, values_from = count)
-
-# df_aux <- df_full |> 
-#   dplyr::select(PIORMB, ABCC2_rs2273697_MO, ABCC2_rs2273697_MA, ABCC2_rs2273697_MR, ABCC2_rs2273697_MD)
-
-## Lendo outra  tabela auxiliar
-
-# df_modelos_genotipos <- readxl::read_xlsx("data-raw/modelos_genotipos.xlsx")
-# 
-# df_modelos_genotipos_transposed <- as.data.frame(t(df_modelos_genotipos)) %>% 
-#   tibble::rownames_to_column()
-# 
-# df_modelos_genotipos_transposed[1,6] <- "ALELO REF. 2"
-# colnames(df_modelos_genotipos_transposed) <- df_modelos_genotipos_transposed[1,]
-# df_m_g_t <- df_modelos_genotipos_transposed[-1, ]
-# 
-# df_m_g_t <-df_m_g_t |> 
-#   dplyr::filter(!is.na(MODELOS))
+df_tabela_aditivo <- fct_table_ad(df_geno_aditivo)
 
 # 2 - Criando modelo 
 
