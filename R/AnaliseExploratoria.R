@@ -7,6 +7,7 @@
 
 # 0 - Scripts e bibliotecas ----
 library(dplyr)
+source("R/fct_aux/func_remove_columns.R")
 
 
 # 1 - Lendo Base de dados ----
@@ -60,33 +61,7 @@ df_modelos_genotipos <- data.frame(df_full[, 32], df_full[, 57:324])
 
 # df_rs17222723 <- data.frame(df_modelos_genotipos[, 1], df_modelos_genotipos[, 8:9])
 
-df_aux_geno_aditivo <- df_modelos_genotipos |> 
-  dplyr::select(!ends_with(c("MR", "MD", "MU")))
-
-colnames_df_ad <- colnames(df_aux_geno_aditivo)
-colnames_just_ad <- c("PIORMB")
-for(i in 2:(length(colnames_df_ad)-1)){
-  this_str <- substr(colnames_df_ad[i], 1, nchar(colnames_df_ad[i])-3)
-  next_str <- substr(colnames_df_ad[i+1], 1, nchar(colnames_df_ad[i+1])-3)
-  previous_str <- substr(colnames_df_ad[i-1], 1, nchar(colnames_df_ad[i-1])-3)
-  if(this_str == previous_str){
-    ## Mantém a variante
-    colnames_just_ad <- c(colnames_just_ad, colnames_df_ad[i], colnames_df_ad[i-1])
-  }else{
-    ## Não adiciona a variante, pois não tem modelo aditivo
-  }
-  if(this_str == next_str){
-    ## Mantém a variante
-    colnames_just_ad <- c(colnames_just_ad, colnames_df_ad[i], colnames_df_ad[i+1])
-  }else{
-    ## Não adiciona a variante, pois não tem modelo aditivo
-  }
-}
-
-colnames_just_ad <- unique(unlist(strsplit(colnames_just_ad, " ")))
-
-df_geno_aditivo <- df_aux_geno_aditivo |> 
-  dplyr::select(any_of(colnames_just_ad))
+df_geno_aditivo <- fct_remove_columns(df_modelos_genotipos, c("MR", "MD", "MU"))
 
 df_geno_aditivo_test <- df_geno_aditivo[,1:3] |> 
   dplyr::mutate(PIORMB = ifelse(PIORMB > 0, 1, 0)) |> 
