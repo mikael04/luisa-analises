@@ -67,6 +67,10 @@ df_geno_aditivo <- df_modelos_genotipos |>
 
 df_tabela_aditivo <- fct_table_ad(df_geno_aditivo)
 
+## Criar tabela XLSX do df criado (modelo aditivo)
+
+fct_merge_cels(df_tabela_aditivo)
+
 # 2 - Criando modelo 
 
 

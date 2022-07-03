@@ -41,45 +41,49 @@ fct_table_ad <- function(df_geno_aditivo){
   df_aux
 }
 
-fct_break_gene_variant <- function(df){
-  # df <- df_tabela_aditivo
-  df <- df |> 
-    dplyr::mutate(variant = substr(variant,1,nchar(variant)-3))
-  df <- df |> 
-    tidyr::separate(variant, c("Gene", "Variant"), sep = "_")
-  
-}
-
-fct_merge_cels <- function(df){
+fct_merge_cels <- function(df_merge){
+  # df_merge <- df_tabela_aditivo
   ## Criar planilha
   library(openxlsx)
   wb <- createWorkbook()
   ## Add a worksheet
   addWorksheet(wb, "Sheet 1")
-  openxlsx::writeData(wb, "Sheet 1", df, startCol = 1, startRow = 1)
-  df_aux <- df
+  ## Quebrando coluna Gene e variante
+  df_aux <- fct_break_gene_variant(df_merge)
   ## Primeiro ordenar df
   df_aux <- fct_merge_cels_pre_method(df_aux)
+  ## Criando workbook
+  openxlsx::writeData(wb, "Sheet 1", df_aux, startCol = 1, startRow = 1)
   ## depois fazer o merge de genes
-  fct_merge_cels_gene(df, wb)
+  fct_merge_cels_gene(df_aux, wb)
   ## e por último fazer o merge de variantes
-  fct_merge_cels_variant(df, wb)
+  fct_merge_cels_variant(df_aux, wb)
   
   ## Save workbook
   saveWorkbook(wb, "data-raw/mergeCellsExample.xlsx", overwrite = TRUE)
 }
 
+fct_break_gene_variant <- function(df_break){
+  # df_break <- df_tabela_aditivo
+  df_break <- df_break |> 
+    dplyr::mutate(variant = substr(variant,1,nchar(variant)-3))
+  df_break |> 
+    tidyr::separate(variant, c("Gene", "Variant"), sep = "_")
+  
+}
+
 ## Ordenando df para próximos métodos
-fct_merge_cels_pre_method <- function(df){
-  df |> 
+fct_merge_cels_pre_method <- function(df_pre){
+  df_pre |> 
     dplyr::arrange(Gene, Variant, genotype)
 }
 
-fct_merge_cels_gene <- function(df, wb){
-  df_count_gene <- df |> 
+fct_merge_cels_gene <- function(df_merge_gene, wb){
+  # df_merge_gene <- df_aux
+  df_count_gene <- df_merge_gene |> 
     dplyr::select(Gene) |> 
     dplyr::group_by(Gene) |> 
-    dplyr::summarise(n = n())
+    dplyr::summarise(n = n()) |> 
     dplyr::ungroup()
   
   ## Merge cells: gene
@@ -91,8 +95,9 @@ fct_merge_cels_gene <- function(df, wb){
     rows_position_first <- rows_position_last + 1
   }
 }
-fct_merge_cels_variant <- function(df, wb){
-  df_count_variant <- df |> 
+fct_merge_cels_variant <- function(df_merge_variant, wb){
+  # df_merge_variant <- df_aux
+  df_count_variant <- df_merge_variant |> 
     dplyr::select(Variant) |> 
     dplyr::group_by(Variant) |> 
     dplyr::mutate(n = dplyr::n()) |> 
