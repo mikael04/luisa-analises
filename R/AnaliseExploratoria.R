@@ -64,6 +64,16 @@ df_aux <- df_full |>
 
 df_modelos_genotipos <- readxl::read_xlsx("data-raw/modelos_genotipos.xlsx")
 
+df_modelos_genotipos_transposed <- as.data.frame(t(df_modelos_genotipos)) %>% 
+  tibble::rownames_to_column()
+
+df_modelos_genotipos_transposed[1,6] <- "ALELO REF. 2"
+colnames(df_modelos_genotipos_transposed) <- df_modelos_genotipos_transposed[1,]
+df_m_g_t <- df_modelos_genotipos_transposed[-1, ]
+
+df_m_g_t <-df_m_g_t |> 
+  dplyr::filter(!is.na(MODELOS))
+
 # 2 - Criando modelo 
 
 
