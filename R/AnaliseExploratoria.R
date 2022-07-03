@@ -96,28 +96,34 @@ df_geno_aditivo_test <- df_geno_aditivo[,1:3] |>
   dplyr::select(-ABCC2_rs2273697_MA) |> 
   dplyr::ungroup()
 
+df_geno_aditivo_test <- df_geno_aditivo_test |> 
+  dplyr::arrange(ABCC2_rs2273697_MO, PIORMB)
+
+
+df_aux <- df_geno_aditivo_test |> 
+  tidyr::pivot_wider(names_from = PIORMB, values_from = count)
 
 # df_aux <- df_full |> 
 #   dplyr::select(PIORMB, ABCC2_rs2273697_MO, ABCC2_rs2273697_MA, ABCC2_rs2273697_MR, ABCC2_rs2273697_MD)
 
 ## Lendo outra  tabela auxiliar
 
-df_modelos_genotipos <- readxl::read_xlsx("data-raw/modelos_genotipos.xlsx")
-
-df_modelos_genotipos_transposed <- as.data.frame(t(df_modelos_genotipos)) %>% 
-  tibble::rownames_to_column()
-
-df_modelos_genotipos_transposed[1,6] <- "ALELO REF. 2"
-colnames(df_modelos_genotipos_transposed) <- df_modelos_genotipos_transposed[1,]
-df_m_g_t <- df_modelos_genotipos_transposed[-1, ]
-
-df_m_g_t <-df_m_g_t |> 
-  dplyr::filter(!is.na(MODELOS))
+# df_modelos_genotipos <- readxl::read_xlsx("data-raw/modelos_genotipos.xlsx")
+# 
+# df_modelos_genotipos_transposed <- as.data.frame(t(df_modelos_genotipos)) %>% 
+#   tibble::rownames_to_column()
+# 
+# df_modelos_genotipos_transposed[1,6] <- "ALELO REF. 2"
+# colnames(df_modelos_genotipos_transposed) <- df_modelos_genotipos_transposed[1,]
+# df_m_g_t <- df_modelos_genotipos_transposed[-1, ]
+# 
+# df_m_g_t <-df_m_g_t |> 
+#   dplyr::filter(!is.na(MODELOS))
 
 # 2 - Criando modelo 
 
 
 #### Avaliando modelo
-summary()
+# summary()
 
 #### Resultado com multicolinearidade, tratar multicolinearidade
