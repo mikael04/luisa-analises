@@ -9,6 +9,7 @@
 library(dplyr)
 source("R/fct_aux/func_remove_columns.R")
 source("R/fct_aux/func_tables.R")
+source("R/fct_aux/func_writ_organ_xlsx.R")
 
 
 # 1 - Lendo Base de dados ----
@@ -60,16 +61,39 @@ df_chi2 <- df_chi2 |>
 
 df_modelos_genotipos <- data.frame(df_full[, 32], df_full[, 57:324])
 
-### 1.2.1 - Tabela para modelos aditivos
-
+### 1.2.1 - Tabela para modelos aditivos ----
 df_geno_aditivo <- df_modelos_genotipos |> 
   dplyr::select(dplyr::ends_with(c("PIORMB", "MO")))
 
 df_tabela_aditivo <- fct_table_ad(df_geno_aditivo)
 
-## Criar tabela XLSX do df criado (modelo aditivo)
+#### Criar tabela XLSX do df criado (modelo aditivo)
 
-fct_merge_cels(df_tabela_aditivo)
+excel_name <- "tabela_modelo_aditivo"
+fct_merge_cels(df_tabela_aditivo, excel_name)
+
+
+### 1.2.2 - Tabela para modelo recessivo ----
+df_geno_recessivo <- fct_remove_columns(df_modelos_genotipos, c("MA", "MD", "MU"))
+
+df_tabela_recessivo <- fct_table_rec_dom_un(df_geno_recessivo)
+
+#### Criar tabela XLSX do df criado (modelo recessivo)
+
+excel_name <- "tabela_modelo_recessivo"
+fct_merge_cels(df_tabela_recessivo, excel_name)
+
+
+### 1.2.3 - Tabela para modelo dominante ----
+df_geno_dominante <- fct_remove_columns(df_modelos_genotipos, c("MA", "MR", "MU"))
+
+df_tabela_dominante <- fct_table_rec_dom_un(df_geno_dominante)
+
+#### Criar tabela XLSX do df criado (modelo dominante)
+
+excel_name <- "tabela_modelo_dominante"
+fct_merge_cels(df_tabela_dominante, excel_name)
+
 
 # 2 - Criando modelo 
 
