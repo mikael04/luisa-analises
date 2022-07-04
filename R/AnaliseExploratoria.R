@@ -95,6 +95,17 @@ excel_name <- "tabela_modelo_dominante"
 fct_merge_cels(df_tabela_dominante, excel_name)
 
 
+### 1.2.4 - Tabela para modelo unico ----
+df_geno_unico <- fct_remove_columns(df_modelos_genotipos, c("MA", "MD", "MR"))
+
+df_tabela_unico <- fct_table_rec_dom_un(df_geno_unico)
+
+#### Criar tabela XLSX do df criado (modelo unico)
+
+excel_name <- "tabela_modelo_unico"
+fct_merge_cels(df_tabela_unico, excel_name)
+
+
 # 2 - Criando modelo 
 
 
