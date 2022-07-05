@@ -31,15 +31,15 @@ fisher.test(table_ABCC2_RS2273697)
 
 #### df_chi2
 df_chi2 <- data.frame(matrix(ncol = 2, nrow = 0))
-colnames(df_chi2) <- c("Variante", "p-value(Chi-2)")
+colnames(df_chi2) <- c("variant", "p-value(Chi-2)")
 
 #### df_fisher
 df_fisher <- data.frame(matrix(ncol = 2, nrow = 0))
-colnames(df_fisher) <- c("Variante", "p-value(fisher)")
+colnames(df_fisher) <- c("variant", "p-value(fisher)")
 
 colnames_df <- colnames(df)
 #### Rodando teste para todas as variantes
-for(i in (2:160)){
+for(i in (2:ncol(df))){
   ## Chi-quadrado
   testes_chi2 <- chisq.test(table(unlist(df[,1]), unlist(df[,i])), simulate.p.value = TRUE)
   df_chi2[i-1, ] = c(colnames_df[i], testes_chi2$p.value)
@@ -55,7 +55,7 @@ for(i in (2:160)){
 
 #### Ordenando por p-value
 df_chi2 <- df_chi2 |> 
-  dplyr::arrange(Variante)
+  dplyr::arrange(variant)
 
 ## 1.2 - Criando tabela Chi-2 ----
 
@@ -67,10 +67,15 @@ df_geno_aditivo <- df_modelos_genotipos |>
 
 df_tabela_aditivo <- fct_table_ad(df_geno_aditivo)
 
-#### Criar tabela XLSX do df criado (modelo aditivo)
+#### Adicionar p-value a tabela
+df_chi2_adit <- fct_break_gene_variant_ends(df_chi2, "_MA")
 
+df_chi2_adit$`p-value(Chi-2)` <- round(as.numeric(df_chi2_adit$`p-value(Chi-2)`), 4)
+df_tabela_aditivo_p <- dplyr::inner_join(df_tabela_aditivo, df_chi2_adit, by = c("Gene", "variant"))
+
+#### Criar tabela XLSX do df criado (modelo aditivo)
 excel_name <- "tabela_modelo_aditivo"
-fct_merge_cels(df_tabela_aditivo, excel_name)
+fct_merge_cels(df_tabela_aditivo_p, excel_name)
 
 
 ### 1.2.2 - Tabela para modelo recessivo ----
@@ -78,10 +83,15 @@ df_geno_recessivo <- fct_remove_columns(df_modelos_genotipos, c("MA", "MD", "MU"
 
 df_tabela_recessivo <- fct_table_rec_dom_un(df_geno_recessivo)
 
+#### Adicionar p-value a tabela
+df_chi2_rec <- fct_break_gene_variant_ends(df_chi2, "_MR")
+
+df_chi2_rec$`p-value(Chi-2)` <- round(as.numeric(df_chi2_rec$`p-value(Chi-2)`), 4)
+df_tabela_recessivo_p <- dplyr::inner_join(df_tabela_recessivo, df_chi2_rec, by = c("Gene", "variant"))
 #### Criar tabela XLSX do df criado (modelo recessivo)
 
 excel_name <- "tabela_modelo_recessivo"
-fct_merge_cels(df_tabela_recessivo, excel_name)
+fct_merge_cels(df_tabela_recessivo_p, excel_name)
 
 
 ### 1.2.3 - Tabela para modelo dominante ----
@@ -89,10 +99,16 @@ df_geno_dominante <- fct_remove_columns(df_modelos_genotipos, c("MA", "MR", "MU"
 
 df_tabela_dominante <- fct_table_rec_dom_un(df_geno_dominante)
 
+#### Adicionar p-value a tabela
+df_chi2_dom <- fct_break_gene_variant_ends(df_chi2, "_MR")
+
+df_chi2_dom$`p-value(Chi-2)` <- round(as.numeric(df_chi2_dom$`p-value(Chi-2)`), 4)
+df_tabela_dominante_p <- dplyr::inner_join(df_tabela_dominante, df_chi2_rec, by = c("Gene", "variant"))
+
 #### Criar tabela XLSX do df criado (modelo dominante)
 
 excel_name <- "tabela_modelo_dominante"
-fct_merge_cels(df_tabela_dominante, excel_name)
+fct_merge_cels(df_tabela_dominante_p, excel_name)
 
 
 ### 1.2.4 - Tabela para modelo unico ----
@@ -100,10 +116,16 @@ df_geno_unico <- fct_remove_columns(df_modelos_genotipos, c("MA", "MD", "MR"))
 
 df_tabela_unico <- fct_table_rec_dom_un(df_geno_unico)
 
+#### Adicionar p-value a tabela
+df_chi2_un <- fct_break_gene_variant_ends(df_chi2, "_MU")
+
+df_chi2_un$`p-value(Chi-2)` <- round(as.numeric(df_chi2_un$`p-value(Chi-2)`), 4)
+df_tabela_unico_p <- dplyr::inner_join(df_tabela_unico, df_chi2_un, by = c("Gene", "variant"))
+
 #### Criar tabela XLSX do df criado (modelo unico)
 
 excel_name <- "tabela_modelo_unico"
-fct_merge_cels(df_tabela_unico, excel_name)
+fct_merge_cels(df_tabela_unico_p, excel_name)
 
 
 # 2 - Criando modelo 
