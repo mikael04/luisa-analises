@@ -11,7 +11,7 @@
 
 # 1 - Função ----
 fct_merge_cels <- function(df_merge, excel_name){
-  # df_merge <- df_tabela_aditivo
+  # df_merge <- df_tabela_aditivo_p
   ## Criar planilha
   library(openxlsx)
   wb <- createWorkbook()
@@ -33,7 +33,7 @@ fct_merge_cels <- function(df_merge, excel_name){
 ## Ordenando df para próximos métodos
 fct_merge_cels_pre_method <- function(df_pre){
   df_pre |> 
-    dplyr::arrange(Gene, Variant, genotype)
+    dplyr::arrange(Gene, variant, genotype)
 }
 
 ## Agrupando linhas de genótipos iguais
@@ -59,10 +59,10 @@ fct_merge_cels_gene <- function(df_merge_gene, wb){
 fct_merge_cels_variant <- function(df_merge_variant, wb){
   # df_merge_variant <- df_aux
   df_count_variant <- df_merge_variant |> 
-    dplyr::select(Variant) |> 
-    dplyr::group_by(Variant) |> 
+    dplyr::select(variant) |> 
+    dplyr::group_by(variant) |> 
     dplyr::mutate(n = dplyr::n()) |> 
-    dplyr::distinct(Variant, .keep_all = T) |> 
+    dplyr::distinct(variant, .keep_all = T) |> 
     dplyr::ungroup()
   
   ## Merge cells: variant
@@ -71,6 +71,7 @@ fct_merge_cels_variant <- function(df_merge_variant, wb){
     rows_count <- as.numeric(df_count_variant[i, 2])
     rows_position_last <- rows_position_first - 1 + rows_count
     mergeCells(wb, "Sheet 1", cols = 2, rows = (rows_position_first):rows_position_last)
+    mergeCells(wb, "Sheet 1", cols = 6, rows = (rows_position_first):rows_position_last)
     rows_position_first <- rows_position_last + 1
   }
 }
