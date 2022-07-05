@@ -47,8 +47,15 @@ fct_break_gene_variant <- function(df_break){
   df_break <- df_break |> 
     dplyr::mutate(variant = substr(variant,1,nchar(variant)-3))
   df_break |> 
-    tidyr::separate(variant, c("Gene", "Variant"), sep = "_")
+    tidyr::separate(variant, c("Gene", "variant"), sep = "_")
   
+}
+
+fct_break_gene_variant_ends <- function(df_break, endswith){
+  # df_break <- df_chi2
+  df_break <- df_break |> 
+    dplyr::filter(grepl(paste0(endswith), variant))
+  fct_break_gene_variant(df_break)
 }
 
 ## Função que retornará uma tabela com os nomes dos genótipos agrupados pelo valor do modelo recessivo
