@@ -11,15 +11,16 @@
 
 ## Função que recebe tabela com colunas genótipo (MO) e modelo aditivo
 fct_table_ad <- function(df_geno_aditivo, agrupamento){
-  # df_geno_aditivo <- 
+  # df_geno_aditivo <-df_geno_aditivo
+  # agrupamento <- "pres"
   df_aux <- data.frame(matrix(nrow = 0, ncol = 4))
   colnames(df_aux) <- c("variant", "genotype", "0", "1")
-  for(i in 2:(ncol(df_geno_aditivo)-1)){
+  for(i in 2:(ncol(df_geno_aditivo))){
     df_this_col <- data.frame(df_geno_aditivo[,1], df_geno_aditivo[,i])
     cols_df <- c("PIORMB", colnames(df_geno_aditivo[i]))
     colnames(df_this_col) <- cols_df
     
-    df_geno_aditivo <- fct_type_group(df_this_col, agrupamento)
+    df_geno_aditivo_test <- fct_type_group(df_this_col, agrupamento, cols_df)
     
     cols_arrange <- c(colnames(df_geno_aditivo[i]), "PIORMB")
     df_geno_aditivo_test <- df_geno_aditivo_test |> 
@@ -41,7 +42,7 @@ fct_table_ad <- function(df_geno_aditivo, agrupamento){
 
 ## Função que recebe tabela com colunas genótipo (MO) e modelo recessivo (MR),
 ## dominante (MD) ou único (MU)
-fct_table_rec_dom_un <- function(df_geno_others){
+fct_table_rec_dom_un <- function(df_geno_others, agrupamento){
   df_aux <- data.frame(matrix(nrow = 0, ncol = 4))
   colnames(df_aux) <- c("variant", "genotype", "0", "1")
   for(i in seq(3, ncol(df_geno_others), 2)){
@@ -55,7 +56,7 @@ fct_table_rec_dom_un <- function(df_geno_others){
     
     df_recessivo_names_aux <- fct_table_rec_get_names(df_recessivo_names, cols_sel)
     
-    df_geno_others_test <- fct_type_group(df_this_col, agrupamento)
+    df_geno_others_test <- fct_type_group(df_this_col, agrupamento, cols_df)
     
     cols_arrange <- c(colnames(df_geno_others[i]), "PIORMB")
     df_geno_others_test <- df_geno_others_test |> 
@@ -114,26 +115,28 @@ fct_table_rec_get_names <- function(df_geno_others_sel, cols_names){
 }
 
 ## Função que retornará uma tabela com os nomes dos genótipos agrupados pelo valor do modelo recessivo
-fct_type_group <- function(df_this_col, agrupamento){
+fct_type_group <- function(df_this_col, agrupamento, cols_df){
   if(agrupamento == "pres"){
-    df_this_col |> 
+    df_this_col <- df_this_col |> 
       dplyr::mutate(PIORMB = ifelse(PIORMB > 0, 1, 0)) |> 
       dplyr::group_by_at(cols_df) |> 
       dplyr::summarise(count = n()) |> 
       dplyr::ungroup()
   }
   if(agrupamento == "sev"){
-    df_this_col |> 
+    df_this_col <- df_this_col |> 
       dplyr::mutate(PIORMB = ifelse(PIORMB > 2, 1, 0)) |> 
       dplyr::group_by_at(cols_df) |> 
       dplyr::summarise(count = n()) |> 
       dplyr::ungroup()
   }
   if(agrupamento == "ulc"){
-    df_this_col |> 
+    df_this_col <- df_this_col |> 
       dplyr::mutate(PIORMB = ifelse(PIORMB > 1, 1, 0)) |> 
       dplyr::group_by_at(cols_df) |> 
       dplyr::summarise(count = n()) |> 
       dplyr::ungroup()
   }
+  
+  df_this_col
 }
