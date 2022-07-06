@@ -8,11 +8,14 @@
 # 0 - Scripts e bibliotecas ----
 library(dplyr)
 source("R/fct_aux/func_calc_perc.R")
+source("R/fct_aux/func_create_table.R")
 source("R/fct_aux/func_remove_columns.R")
-source("R/fct_aux/func_tables.R")
+source("R/fct_aux/func_tables_aux.R")
 source("R/fct_aux/func_testes_chi2_fisher.R")
 source("R/fct_aux/func_writ_organ_xlsx.R")
 
+# Suppress summarise info
+options(dplyr.summarise.inform = FALSE)
 
 # 1 - Lendo Base de dados ----
 df_full <- haven::read_sav("data-raw/banco lla e linfoma 16.05.sav") |> 
@@ -39,66 +42,54 @@ if(list_testes[[1]]){
   df_fisher <- list_testes[[3]]
 }
 
-# 3 - Avaliando modelos (dominante, recessivo, aditivo)
-
+# 3 - Avaliando modelos (dominante, recessivo, aditivo) ----
 df_modelos_genotipos <- data.frame(df_full[, 32], df_full[, 57:324])
-### 3.1 - Tabela para modelos aditivos ----
-df_geno_aditivo <- df_modelos_genotipos |> 
-  dplyr::select(dplyr::ends_with(c("PIORMB", "MO")))
 
-df_tabela_aditivo <- fct_table_ad(df_geno_aditivo, "pres")
+## 3.1 - Gerando tabelas para modelo presença vs ausência ----
 
-#### Adicionar p-value a tabela
-df_chi2_adit <- fct_break_gene_variant_ends(df_chi2, "_MA")
+type_group = "pres"
+table <- NULL
+switch_teste <- T
 
-df_chi2_adit$`p-value(Chi-2)` <- round(as.numeric(df_chi2_adit$`p-value(Chi-2)`), 4)
-df_tabela_aditivo_p <- dplyr::inner_join(df_tabela_aditivo, df_chi2_adit, by = c("Gene", "variant"))
+return_create_table <- fct_create_table(df_modelos_genotipos, df_chi2, table, type_group, write_table, switch_teste)
+if(return_create_table == 1){
+  print("Geração de todas as tabelas para parâmetro presença vs ausência feitas com sucesso")
+}
+if(return_create_table > 1 & return_create_table <= 5){
+  print("Geração de tabela individual feita com sucesso")
+  print(paste0("Gerada apenas tabela para modelo ", table))
+}
 
-## Calculando percentual da coluna de frequencia
-df_tabela_aditivo_p_perc <- fct_calc_perc(df_tabela_aditivo_p)
+## 3.2 - Gerando tabelas para modelo não ulcerados vs ulcerados ----
 
-#### Criar tabela XLSX do df criado (modelo aditivo)
-excel_name <- "tabela_modelo_aditivo"
-fct_merge_cels(df_tabela_aditivo_p_perc, excel_name)
+type_group = "ulc"
+table <- NULL
+switch_teste <- T
 
-
-### 1.2.2 - Tabela para modelo recessivo ----
-df_geno_recessivo <- fct_remove_columns(df_modelos_genotipos, c("MA", "MD", "MU"))
-
-df_tabela_recessivo <- fct_table_rec_dom_un(df_geno_recessivo, "pres")
-
-#### Adicionar p-value a tabela
-df_chi2_rec <- fct_break_gene_variant_ends(df_chi2, "_MR")
-
-df_chi2_rec$`p-value(Chi-2)` <- round(as.numeric(df_chi2_rec$`p-value(Chi-2)`), 4)
-df_tabela_recessivo_p <- dplyr::inner_join(df_tabela_recessivo, df_chi2_rec, by = c("Gene", "variant"))
-
-## Calculando percentual da coluna de frequencia
-df_tabela_recessivo_p_perc <- fct_calc_perc(df_tabela_recessivo_p)
-
-#### Criar tabela XLSX do df criado (modelo recessivo)
-excel_name <- "tabela_modelo_recessivo"
-fct_merge_cels(df_tabela_recessivo_p_perc, excel_name)
+return_create_table <- fct_create_table(df_modelos_genotipos, df_chi2, table, type_group, write_table, switch_teste)
+if(return_create_table == 1){
+  print("Geração de todas as tabelas para parametro ulcerados vs não ulcerados feitas com sucesso")
+}
+if(return_create_table > 1 & return_create_table <= 5){
+  print("Geração de tabela individual feita com sucesso")
+  print(paste0("Gerada apenas tabela para modelo ", table))
+}
 
 
-### 1.2.3 - Tabela para modelo dominante ----
-df_geno_dominante <- fct_remove_columns(df_modelos_genotipos, c("MA", "MR", "MU"))
+## 3.3 - Gerando tabelas para modelo mb severo vs não severo ----
 
-df_tabela_dominante <- fct_table_rec_dom_un(df_geno_dominante, "pres")
+type_group = "sev"
+table <- NULL
+switch_teste <- T
 
-#### Adicionar p-value a tabela
-df_chi2_dom <- fct_break_gene_variant_ends(df_chi2, "_MR")
-
-df_chi2_dom$`p-value(Chi-2)` <- round(as.numeric(df_chi2_dom$`p-value(Chi-2)`), 4)
-df_tabela_dominante_p <- dplyr::inner_join(df_tabela_dominante, df_chi2_rec, by = c("Gene", "variant"))
-
-## Calculando percentual da coluna de frequencia
-df_tabela_dominante_p_perc <- fct_calc_perc(df_tabela_dominante_p)
-
-#### Criar tabela XLSX do df criado (modelo dominante)
-
-excel_name <- "tabela_modelo_dominante"
-fct_merge_cels(df_tabela_dominante_p_perc, excel_name)
+return_create_table <- fct_create_table(df_modelos_genotipos, df_chi2, table, type_group, write_table, switch_teste)
+if(return_create_table == 1){
+  print("Geração de todas as tabelas para parametro mb severo vs não severo feitas com sucesso")
+}
+if(return_create_table > 1 & return_create_table <= 5){
+  print("Geração de tabela individual feita com sucesso")
+  print(paste0("Gerada apenas tabela para modelo ", table))
+}
 
 
 #### Avaliando modelo
