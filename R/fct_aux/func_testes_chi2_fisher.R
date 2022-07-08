@@ -25,13 +25,13 @@ fct_testes_chi2_fisher <- function(df){
   for(i in (2:ncol(df))){
     ## Chi-quadrado
     testes_chi2 <- chisq.test(table(unlist(df[,1]), unlist(df[,i])), simulate.p.value = F)
-    testes_chi2_mc <- chisq.test(table(unlist(df[,1]), unlist(df[,i])), simulate.p.value = TRUE)
+    testes_chi2_mc <- chisq.test(table(unlist(df[,1]), unlist(df[,i])), simulate.p.value = TRUE, B = 10000)
     df_chi2[i-1, ] = c(colnames_df[i], testes_chi2$p.value, testes_chi2_mc$p.value)
     ## Fisher
     tabela_fisher <- table(unlist(df[,1]), unlist(df[,i]))
     if(ncol(tabela_fisher) > 1){
       testes_fisher <- fisher.test(tabela_fisher, simulate.p.value = F, workspace = 2e8)
-      testes_fisher_mc <- fisher.test(tabela_fisher, simulate.p.value = TRUE)
+      testes_fisher_mc <- fisher.test(tabela_fisher, simulate.p.value = TRUE, B = 10000)
       df_fisher[i-1, ] = c(colnames_df[i], testes_fisher$p.value, testes_fisher_mc$p.value)
     }else{
       df_fisher[i-1, ] = c(colnames_df[i], -1, -1)
