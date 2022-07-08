@@ -22,7 +22,7 @@ options(dplyr.summarise.inform = FALSE)
 df_full <- haven::read_sav("data-raw/banco lla e linfoma 16.05.sav") |> 
   dplyr::filter(!is.na(PIORMB))
 
-set.seed(44)
+set.seed(42)
 
 # 2 - Rodando testes ----
 
@@ -49,9 +49,11 @@ df_checks <- fct_test_assump(df_abs_or_pres)
 df_chi2_fisher <- dplyr::inner_join(df_chi2, df_fisher, by = "variant")
 df_chi2_fisher_checks <- dplyr::inner_join(df_chi2_fisher, df_checks, by = "variant")
 
+p_value <- 0.05
+
 df_chi2_fisher_sig <- df_chi2_fisher_checks |> 
-  dplyr::filter(`p-value(Chi-2)` < 0.05 | `p-value(Chi-2)-MC` < 0.05 |
-                `p-value(fisher)` < 0.05 | `p-value(fisher)-MC` < 0.05)
+  dplyr::filter(`p-value(Chi-2)` < p_value | `p-value(Chi-2)-MC` < p_value |
+                `p-value(fisher)` < p_value | `p-value(fisher)-MC` < p_value)
 
 # 3 - Avaliando modelos (dominante, recessivo, aditivo) ----
 df_modelos_genotipos <- data.frame(df_full[, 32], df_full[, 57:324])
