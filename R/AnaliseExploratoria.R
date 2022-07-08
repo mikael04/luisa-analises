@@ -11,6 +11,7 @@ source("R/fct_aux/func_calc_perc.R")
 source("R/fct_aux/func_create_table.R")
 source("R/fct_aux/func_remove_columns.R")
 source("R/fct_aux/func_tables_aux.R")
+source("R/fct_aux/func_test_assump.R")
 source("R/fct_aux/func_testes_chi2_fisher.R")
 source("R/fct_aux/func_writ_organ_xlsx.R")
 
@@ -41,6 +42,18 @@ if(list_testes[[1]]){
   df_chi2 <- list_testes[[2]]
   df_fisher <- list_testes[[3]]
 }
+
+## Verificando pressupostos (n < 5 em alguma categoria; tabela com mais de uma coluna)
+df_checks <- fct_test_assump(df_abs_or_pres)
+
+df_chi2_fisher <- dplyr::inner_join(df_chi2, df_fisher, by = "variant")
+df_chi2_fisher_checks <- dplyr::inner_join(df_chi2_fisher, df_checks, by = "variant")
+
+p_value <- 0.05
+
+df_chi2_fisher_sig <- df_chi2_fisher_checks |> 
+  dplyr::filter(`p-value(Chi-2)` < p_value | `p-value(Chi-2)-MC` < p_value |
+                `p-value(fisher)` < p_value | `p-value(fisher)-MC` < p_value)
 
 # 3 - Avaliando modelos (dominante, recessivo, aditivo) ----
 df_modelos_genotipos <- data.frame(df_full[, 32], df_full[, 57:324])

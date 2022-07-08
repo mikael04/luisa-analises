@@ -15,9 +15,9 @@ source("R/fct_aux/func_calc_perc.R")
 
 
 # 1 - Lendo Base de dados ----
-df_abs_or_pres <- haven::read_sav("data-raw/banco lla e linfoma 16.05.sav") |> 
-  dplyr::filter(!is.na(PIORMB))|> 
-  dplyr::select(Presença2, dplyr::ends_with(c("MA", "MR", "MD", "MU")))
+df_abs_or_pres <- haven::read_sav("data-raw/banco lla e linfoma 16.05.sav") |>
+  dplyr::select(PIORMB, dplyr::ends_with(c("MA", "MR", "MD"))) |> 
+  dplyr::mutate(PIORMB = ifelse(PIORMB > 0, 1, 0))
 
 set.seed(42)
 
@@ -79,20 +79,70 @@ write.csv(df_both_tests, "data-raw/df_testes_chi2_fisher_abs_or_pres.csv")
 #   dplyr::filter(`p-value(fisher)-MC` < 0.05)
 
 ## Investigando alguns testes e seus resultados individualmente
-# i <- 2
+df_ABCB1_rs9282564 <- df_abs_or_pres |> 
+  dplyr::select(PIORMB, ABCB1_rs9282564_MA)
+
+table(df_ABCB1_rs9282564)
+chisq.test(table(df_ABCB1_rs9282564), simulate.p.value = F)
+fisher.test(table(df_ABCB1_rs9282564), simulate.p.value = F)
+fisher.test(table(df_ABCB1_rs9282564), simulate.p.value = T)
+
+df_ABCC1_rs8187858 <- df_abs_or_pres |> 
+  dplyr::select(PIORMB, ABCC1_rs8187858_MR)
+
+table(df_ABCC1_rs8187858)
+testes_chi2 <- chisq.test(table(df_ABCC1_rs8187858), simulate.p.value = T)
+
+df_SLC19A1_rs12659 <- df_abs_or_pres |> 
+  dplyr::select(PIORMB, SLC19A1_rs12659_MR)
+
+set.seed(44)
+table(df_SLC19A1_rs12659)
+chisq.test(table(df_SLC19A1_rs12659), simulate.p.value = T)
+
+df_ABCC4_chr1395164412 <- df_abs_or_pres |> 
+  dplyr::select(PIORMB, ABCC4_chr1395164412_MR)
+
+table(df_ABCC4_chr1395164412)
+chisq.test(table(df_ABCC4_chr1395164412), simulate.p.value = T)
+
+#### df tabela de contingencia (checagem de valores menor que 5)
+df_checks <- data.frame(matrix(ncol = 3, nrow = 0))
+colnames(df_checks) <- c("variant", "Pass (<5 assump)", "ncol > 1")
+colnames_df <- colnames(df_abs_or_pres)
+
+for(i in (2:ncol(df_abs_or_pres))){
+  tabela_conting <- table(unlist(df_abs_or_pres[,1]), unlist(df_abs_or_pres[,i]))
+  check_ncol <- F
+  if(ncol(tabela_conting) > 1){
+    check_ncol <- T
+  }
+  check_assump <- T
+  for(j in 1:length(tabela_conting)){
+    if(tabela_conting[j] < 5){
+      check_assump <- F
+    }
+  }
+  df_checks[i-1, ] = c(colnames_df[i], check_assump, check_ncol)
+}
+
+df_MTHFR_rs4846051 <- df_abs_or_pres |> 
+  dplyr::select(PIORMB, MTHFR_rs4846051_MA)
+
+table(df_MTHFR_rs4846051)
+
 # tabela_fisher <- table(unlist(df_abs_or_pres[,1]), unlist(df_abs_or_pres[,i]))
 # testes_fisher <- fisher.test(tabela_fisher, simulate.p.value = F, workspace = 2e8)
-# 
-# i <- 2
-# testes_chi2 <- table(unlist(df_abs_or_pres[,1]), unlist(df_abs_or_pres[,i]))
-# testes_chi2 <- chisq.test(testes_chi2, simulate.p.value = F)
 
-# ## Investigando diferença entre Presença2 e PIORMB
-# 
-# df_presenca_piormb <- df_full |> 
-#   dplyr::select(ID, Presença2, PIORMB) |> 
-#   dplyr::mutate(PIORMB_cat = ifelse(PIORMB > 0, 1, 0)) |> 
-#   dplyr::select(ID, Presença2, PIORMB_cat, PIORMB)
-# 
+# i <- 64
+# testes_chi2 <- table(unlist(df_abs_or_pres[,1]), unlist(df_abs_or_pres[,i]))
+
+## Investigando diferença entre Presença2 e PIORMB
+
+df_presenca_piormb <- df_full |>
+  dplyr::select(ID, Presença2, PIORMB) |>
+  dplyr::mutate(PIORMB_cat = ifelse(PIORMB > 0, 1, 0)) |>
+  dplyr::select(ID, Presença2, PIORMB_cat, PIORMB)
+
 # 
 # count(unique(df_full$Paciente))

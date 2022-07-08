@@ -27,7 +27,7 @@ fct_merge_cels <- function(df_merge, excel_name){
   fct_merge_cels_variant(df_aux, wb)
   
   ## Save workbook
-  saveWorkbook(wb, paste0("data-raw/", excel_name ,".xlsx"), overwrite = TRUE)
+  saveWorkbook(wb, paste0("data-raw/tabelas_modelos/", excel_name ,".xlsx"), overwrite = TRUE)
 }
 
 ## Ordenando df para próximos métodos
