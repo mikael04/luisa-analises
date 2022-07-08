@@ -18,16 +18,23 @@ fct_test_assump <- function(df_abs_or_pres){
   
   for(i in (2:ncol(df_abs_or_pres))){
     tabela_conting <- table(unlist(df_abs_or_pres[,1]), unlist(df_abs_or_pres[,i]))
+    ## Rodando teste para ter tabela de valores esperados
+    teste_chi2 <- chisq.test(tabela_conting, simulate.p.value = TRUE, B = 10000)
+    expected <- teste_chi2$expected
+    
+    check_assump <- F
+    ## Testando para todos os valores da tabela de contingencia
+    for(j in 1:length(expected)){
+      if(expected[j] < 5){
+        check_assump <- T
+      }
+    }
+    ## Checando se possui mais de uma coluna
     check_ncol <- F
     if(ncol(tabela_conting) > 1){
       check_ncol <- T
     }
-    check_assump <- T
-    for(j in 1:length(tabela_conting)){
-      if(tabela_conting[j] < 5){
-        check_assump <- F
-      }
-    }
+    ## adicionando ao df
     df_checks[i-1, ] = c(colnames_df[i], check_assump, check_ncol)
   }
   df_checks
