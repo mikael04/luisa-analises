@@ -83,7 +83,9 @@ df_ABCB1_rs9282564 <- df_abs_or_pres |>
   dplyr::select(PIORMB, ABCB1_rs9282564_MA)
 
 table(df_ABCB1_rs9282564)
-testes_chi2 <- chisq.test(table(df_ABCB1_rs9282564), simulate.p.value = T)
+chisq.test(table(df_ABCB1_rs9282564), simulate.p.value = F)
+fisher.test(table(df_ABCB1_rs9282564), simulate.p.value = F)
+fisher.test(table(df_ABCB1_rs9282564), simulate.p.value = T)
 
 df_ABCC1_rs8187858 <- df_abs_or_pres |> 
   dplyr::select(PIORMB, ABCC1_rs8187858_MR)
