@@ -139,7 +139,7 @@ if(switch_write_table){
 
 aus_or_pres_sig <- dplyr::inner_join(df_chi2_a_p, df_fisher_a_p, by = "variant") |> 
   dplyr::filter(`p-value(Chi-2)` < p_value | `p-value(Chi-2)-MC` < p_value |
-                `p-value(fisher)` < p_value | `p-value(fisher)-MC` < p_value) |> 
+                  `p-value(fisher)` < p_value | `p-value(fisher)-MC` < p_value) |> 
   dplyr::select(variant) |> 
   dplyr::pull()
 
@@ -147,3 +147,31 @@ df_aus_or_pres_pois <- df_aus_or_pres |>
   dplyr::select(PIORMB, dplyr::matches(aus_or_pres_sig))
 
 df_aus_or_pres_pois <- fct_regression_poison_uni(df_aus_or_pres_pois)
+
+
+## 3.2 Ulcerados vs não ulcerados ----
+
+ulc_sig <- dplyr::inner_join(df_chi2_u, df_fisher_u, by = "variant") |> 
+  dplyr::filter(`p-value(Chi-2)` < p_value | `p-value(Chi-2)-MC` < p_value |
+                  `p-value(fisher)` < p_value | `p-value(fisher)-MC` < p_value) |> 
+  dplyr::select(variant) |> 
+  dplyr::pull()
+
+df_ulc_pois <- df_ulc |> 
+  dplyr::select(PIORMB, dplyr::matches(ulc_sig))
+
+df_ulc_pois <- fct_regression_poison_uni(df_ulc_pois)
+
+
+## 3.3 Severos vs não severos ----
+
+sev_sig <- dplyr::inner_join(df_chi2_s, df_fisher_s, by = "variant") |> 
+  dplyr::filter(`p-value(Chi-2)` < p_value | `p-value(Chi-2)-MC` < p_value |
+                  `p-value(fisher)` < p_value | `p-value(fisher)-MC` < p_value) |> 
+  dplyr::select(variant) |> 
+  dplyr::pull()
+
+df_sev_pois <- df_sev |> 
+  dplyr::select(PIORMB, dplyr::matches(sev_sig))
+
+df_sev_pois <- fct_regression_poison_uni(df_sev_pois)
