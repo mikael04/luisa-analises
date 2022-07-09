@@ -29,4 +29,5 @@ fct_regression_poison_uni <- function(df){
       df_poi[i-1, ] = c(colnames_df[i], NA)
     }
   }
+  df_poi
 }
