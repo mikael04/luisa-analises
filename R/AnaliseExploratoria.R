@@ -16,8 +16,14 @@ source("R/fct_aux/func_test_assump.R")
 source("R/fct_aux/func_testes_chi2_fisher.R")
 source("R/fct_aux/func_writ_organ_xlsx.R")
 
-# Suppress summarise info
+## 0.1 Parâmetros globais ----
+
+p_value <- 0.05
+
 options(dplyr.summarise.inform = FALSE)
+switch_test <- T
+switch_write_table <- F
+
 
 # 1 - Lendo Base de dados ----
 df_full <- haven::read_sav("data-raw/banco lla e linfoma 16.05.sav") |> 
@@ -25,7 +31,7 @@ df_full <- haven::read_sav("data-raw/banco lla e linfoma 16.05.sav") |>
 
 set.seed(42)
 
-# 2 - Rodando testes ----
+# 2 - Qui-quadrado e teste de fisher ----
 
 ## 2.1 - Teste 1 (Presença) ----
 ## Teste 1 será rodado para agrupamento não possui (ausencia) VS possui (presenca) de mucosite bocal
@@ -49,14 +55,16 @@ if(list_testes[[1]]){
 ### 2.1.2 - Avaliando modelos (dominante, recessivo, aditivo) ----
 df_modelos_genotipos <- data.frame(df_full[, 32], df_full[, 57:324])
 
-## 2.1.2.1 - Gerando tabelas para modelos agrupados por ausência vs presença ----
+#### 2.1.2.1 - Gerando tabelas para modelos agrupados por ausência vs presença ----
+## Adicionando Tabelas de contingência
 
 type_group = "pres"
 table <- NULL
-switch_teste <- T
 
-return_create_table <- fct_create_table(df_modelos_genotipos, df_chi2_a_p, table, type_group, write_table, switch_teste)
-fct_check_return(return_create_table, "create_table", table, type_group, switch_teste)
+if(switch_write_table){
+  return_create_table <- fct_create_table(df_modelos_genotipos, df_chi2_a_p, table, type_group, write_table, switch_teste)
+  fct_check_return(return_create_table, "create_table", table, type_group, switch_teste)
+}
 
 ## 2.2 - Teste 2 (Ulcerações) ----
 ## Teste 2 será rodado para agrupamento não ulcerados vs ulcerados
@@ -77,14 +85,19 @@ if(list_testes[[1]]){
   df_fisher_u <- list_testes[[3]]
 }
 
-## Gerando tabelas para modelo não ulcerados vs ulcerados ----
+### 2.2.2 - Avaliando modelos (dominante, recessivo, aditivo) ----
+# df_modelos_genotipos <- data.frame(df_full[, 32], df_full[, 57:324])
+
+#### 2.2.2.1. Gerando tabelas para modelo não ulcerados vs ulcerados ----
+## Adicionando Tabelas de contingência
 
 type_group = "ulc"
 table <- NULL
-switch_teste <- T
 
-return_create_table <- fct_create_table(df_modelos_genotipos, df_chi2_u, table, type_group, write_table, switch_teste)
-fct_check_return(return_create_table, "create_table", table, type_group, switch_teste)
+if(switch_write_table){
+  return_create_table <- fct_create_table(df_modelos_genotipos, df_chi2_u, table, type_group, write_table, switch_teste)
+  fct_check_return(return_create_table, "create_table", table, type_group, switch_teste)
+}
 
 
 ## 2.3 - Teste 3 (Severidade) ----
@@ -97,7 +110,7 @@ df_sev <- df_full |>
   dplyr::select(PIORMB, dplyr::ends_with(c("MA", "MR", "MD"))) |> 
   dplyr::mutate(PIORMB = ifelse(PIORMB > 2, 1, 0))
 
-### 2.2.1 Rodando testes chi-2 e de fisher (não ulcerados vs ulcerados) ----
+### 2.3.1 Rodando testes chi-2 e de fisher (não severo vs severo) ----
 list_testes <- fct_testes_chi2_fisher(df_sev)
 
 if(list_testes[[1]]){
@@ -106,17 +119,31 @@ if(list_testes[[1]]){
   df_fisher_s <- list_testes[[3]]
 }
 
-## 3.3 - Gerando tabelas para modelo mb severo vs não severo ----
+
+### 2.3.2 - Avaliando modelos (dominante, recessivo, aditivo) ----
+# df_modelos_genotipos <- data.frame(df_full[, 32], df_full[, 57:324])
+
+#### 2.3.2.1 - Gerando tabelas para modelo mb severo vs não severo ----
+## Adicionando Tabelas de contingência
 
 type_group = "sev"
 table <- NULL
-switch_teste <- T
 
-return_create_table <- fct_create_table(df_modelos_genotipos, df_chi2_s, table, type_group, write_table, switch_teste)
-fct_check_return(return_create_table, "create_table", table, type_group, switch_teste)
+if(switch_write_table){
+  return_create_table <- fct_create_table(df_modelos_genotipos, df_chi2_s, table, type_group, write_table, switch_teste)
+  fct_check_return(return_create_table, "create_table", table, type_group, switch_teste)
+}
 
+# 3 Regressão de Poisson ----
+## 3.1 Presença vs ausência ----
 
-#### Avaliando modelo
-# summary()
+aus_or_pres_sig <- dplyr::inner_join(df_chi2_a_p, df_fisher_a_p, by = "variant") |> 
+  dplyr::filter(`p-value(Chi-2)` < p_value | `p-value(Chi-2)-MC` < p_value |
+                `p-value(fisher)` < p_value | `p-value(fisher)-MC` < p_value) |> 
+  dplyr::select(variant) |> 
+  dplyr::pull()
 
-#### Resultado com multicolinearidade, tratar multicolinearidade
+df_aus_or_pres_pois <- df_aus_or_pres |> 
+  dplyr::select(PIORMB, dplyr::matches(aus_or_pres_sig))
+
+df_aus_or_pres_pois <- fct_regression_poison_uni(df_aus_or_pres_pois)
