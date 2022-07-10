@@ -15,6 +15,8 @@ source("R/fct_aux/func_tables_aux.R")
 source("R/fct_aux/func_test_assump.R")
 source("R/fct_aux/func_testes_chi2_fisher.R")
 source("R/fct_aux/func_writ_organ_xlsx.R")
+source("R/fct_aux/func_regression_poisson.R")
+source("R/fct_aux/func_regression_binomial.R")
 
 ## 0.1 Parâmetros globais ----
 
@@ -134,19 +136,19 @@ if(switch_write_table){
   fct_check_return(return_create_table, "create_table", table, type_group, switch_teste)
 }
 
-# 3 Regressão de Poisson ----
+# 3 Regressão de Poisson Univariada ----
 ## 3.1 Presença vs ausência ----
 
-aus_or_pres_sig <- dplyr::inner_join(df_chi2_a_p, df_fisher_a_p, by = "variant") |> 
+abs_or_pres_sig <- dplyr::inner_join(df_chi2_a_p, df_fisher_a_p, by = "variant") |> 
   dplyr::filter(`p-value(Chi-2)` < p_value | `p-value(Chi-2)-MC` < p_value |
                   `p-value(fisher)` < p_value | `p-value(fisher)-MC` < p_value) |> 
   dplyr::select(variant) |> 
   dplyr::pull()
 
-df_aus_or_pres_pois <- df_aus_or_pres |> 
-  dplyr::select(PIORMB, dplyr::matches(aus_or_pres_sig))
+df_abs_or_pres_pois <- df_abs_or_pres |> 
+  dplyr::select(PIORMB, dplyr::matches(abs_or_pres_sig))
 
-df_aus_or_pres_pois <- fct_regression_poison_uni(df_aus_or_pres_pois)
+df_abs_or_pres_pois <- fct_regression_poison_uni(df_abs_or_pres_pois)
 
 
 ## 3.2 Ulcerados vs não ulcerados ----
@@ -157,7 +159,7 @@ ulc_sig <- dplyr::inner_join(df_chi2_u, df_fisher_u, by = "variant") |>
   dplyr::select(variant) |> 
   dplyr::pull()
 
-df_ulc_pois <- df_ulc |> 
+df_ulc_pois <- df_full |> 
   dplyr::select(PIORMB, dplyr::matches(ulc_sig))
 
 df_ulc_pois <- fct_regression_poison_uni(df_ulc_pois)
@@ -175,3 +177,90 @@ df_sev_pois <- df_sev |>
   dplyr::select(PIORMB, dplyr::matches(sev_sig))
 
 df_sev_pois <- fct_regression_poison_uni(df_sev_pois)
+
+
+# 4. Regressão Poisson Multivariada ----
+## 4.1 Presença vs ausência ----
+
+df_abs_or_pres_pois_uni <- df_abs_or_pres_pois |> 
+  dplyr::filter(`p-value(poisson)` <= p_value) # Nenhuma variante significativa
+
+## 4.2 Ulcerados vs não ulcerados ----
+
+ulc_sig_pois_uni <- df_ulc_pois |> 
+  dplyr::filter(`p-value(poisson)` <= p_value) |> # 16 variantes significativas
+  dplyr::pull(1)
+
+df_ulc_sig_pois_uni <- df_full |> 
+  dplyr::select(PIORMB, dplyr::matches(ulc_sig_pois_uni))
+
+summary(ulc_pois_mult <- glm(PIORMB ~ ., data = df_ulc_sig_pois_uni, family = "poisson"))
+step(ulc_pois_mult) # Poderia criar uma função para remover uma variante por vez, mas
+                    # Acho que resultaria nisso de qualquer forma.
+
+summary(ulc_pois_mult <- glm(formula = PIORMB ~ ABCC2_rs2273697_MD + ABCC6_rs2856585_MA + 
+                       GSTA1_rs1051775_MD + GSTP1_rs4891_MA + GSTP1_rs4891_MD + 
+                       HSP90AA1_rs4947_MD, family = "poisson", data = df_ulc_sig_pois_uni))
+
+# Nem todas variantes são significativas para 0.05, mas a remoção da variante não significativa
+# não parece melhorar o modelo. Contudo, como o objetivo é encontrar aquelas que são significativas
+# a 0.05 no modelo multivariado, podemos removê-la ainda.
+
+hnp::hnp(ulc_pois_mult, resid.type = "deviance") # é desejado que os pontos (as observações)
+# estejam contidos dentro dos limites de confiança (que são gerados por simulações de MC).
+# Isso representa o quão bem ajustados os dados estão ao modelo assumido (nesse caso poisson).
+# É aceitável que até 5% das observações estejam fora dos limites, porém que mantenham-se
+# em torno do centro dos limites de confiança. Como há um comportamento horizontal (ao fim), pode
+# ser evidênciad de que a poisson não tem sentido para esses dados.
+
+
+## 4.3 Severos vs não severos ----
+
+df_sev_sig_pois_uni <- df_sev_pois |> 
+  dplyr::filter(`p-value(poisson)` <= p_value) # Três variantes significativas
+
+
+# 5. Regressão binomial univariada ----
+## 5.1 Presença vs ausência ----
+abs_or_pres_sig <- dplyr::inner_join(df_chi2_a_p, df_fisher_a_p, by = "variant") |> 
+  dplyr::filter(`p-value(Chi-2)` < p_value | `p-value(Chi-2)-MC` < p_value |
+                  `p-value(fisher)` < p_value | `p-value(fisher)-MC` < p_value) |> 
+  dplyr::select(variant) |> 
+  dplyr::pull()
+
+df_abs_or_pres_binom <- df_abs_or_pres |> 
+  dplyr::select(PIORMB, dplyr::matches(abs_or_pres_sig))
+
+df_abs_or_pres_binom <- fct_regression_binom_uni(df_abs_or_pres_binom)
+
+# 6. Regressão binomial multivariada ----
+## 6.1 Presença vs ausência ----
+
+abs_or_pres_sig_binom_uni <- df_abs_or_pres_binom |> 
+  dplyr::filter(`p-value(binomial)` <= p_value) |> # 16 variantes significativas
+  dplyr::pull(1)
+
+df_abs_or_pres_sig_binom_uni <- df_abs_or_pres |> 
+  dplyr::select(PIORMB, dplyr::matches(abs_or_pres_sig_binom_uni))
+
+summary(abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_abs_or_pres_sig_binom_uni, family = "binomial"))
+step(abs_or_pres_binom_mult) # Poderia criar uma função para remover uma variante por vez, mas
+# acho que resultaria nisso de qualquer forma.
+
+summary(abs_or_pres_binom_mult  <- glm(formula = PIORMB ~ ABCC1_rs35587_MA + ABCC1_rs35587_MD + 
+                               ABCC2_rs2273697_MA + ABCC2_rs2273697_MD + ABCC2_rs3740066_MR + 
+                               ABCC4_chr1395164412_MA + GSTP1_rs1695_MD + GSTP1_rs4891_MA + 
+                               SLC19A1_rs1051266_MA + SLC19A1_rs1051266_MR + SLC19A1_rs12659_MD, 
+                             family = "binomial", data = df_abs_or_pres_sig_binom_uni))
+
+# Nem todas variantes são significativas a 0.05 também, contudo a remoção de mais variantes
+# pioraria a qualidade do ajuste. Contudo, como o interesse aqui é inferencial, poderia ser feito
+# o procedimento de remoção de variantes, uma a uma, até que todas fossem significativas.
+
+hnp::hnp(abs_or_pres_binom_mult, resid.type = "deviance")
+
+# Agora, como esperado, a distribuição assumida para os dados é muito melhor (e sem dúvidas certa),
+# visto que nem mesmo uma observação sai dos limites de confiança.
+
+
+
