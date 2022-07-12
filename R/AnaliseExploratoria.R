@@ -23,8 +23,8 @@ source("R/fct_aux/func_regression_binomial.R")
 p_value <- 0.05
 
 options(dplyr.summarise.inform = FALSE)
-switch_teste <- T
-switch_write_table <- T
+switch_teste <- F
+switch_write_table <- F
 
 
 # 1 - Lendo Base de dados ----
