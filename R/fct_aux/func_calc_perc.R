@@ -9,6 +9,8 @@
 
 # 1 - Função ----
 fct_calc_perc <- function(df_tabela_aditivo_p){
+  df_tabela_aditivo_p$`0` <- ifelse(is.na(df_tabela_aditivo_p$`0`), 0, df_tabela_aditivo_p$`0`)
+  df_tabela_aditivo_p$`1` <- ifelse(is.na(df_tabela_aditivo_p$`1`), 0, df_tabela_aditivo_p$`1`)
   df_tabela_aditivo_p$n_tot <- df_tabela_aditivo_p$`0` + df_tabela_aditivo_p$`1`
   df_tabela_aditivo_p_perc <- df_tabela_aditivo_p |> 
     dplyr::mutate(`abs_mb(%)` = paste0(`0`, " ", "(", round(`0`/n_tot,3)*100 , ")")) |> 

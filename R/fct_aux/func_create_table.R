@@ -11,13 +11,19 @@
 # 1 - Função ----
 
 ## Função que recebe tabela com colunas genótipo (MO) e modelo aditivo
-fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, write_table, teste){
+fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, write_table, teste_print){
   if(is.null(table)){
     ####################################################################### #
     ## Gerando para o aditivo
-    if(teste){
+    if(teste_print){
       print("Gerando todas as tabelas")
       print("Iniciando geração de tabela dos modelos aditivos")
+    }
+    teste <- F
+    if(teste){
+      df_modelos_genotipos <- data.frame(df_full[, 32], df_full[, 57:324])
+      type_group <- "pres"
+      df_chi2 <- df_chi2_a_p
     }
     df_geno_aditivo <- df_modelos_genotipos |> 
       dplyr::select(dplyr::ends_with(c("PIORMB", "MO")))

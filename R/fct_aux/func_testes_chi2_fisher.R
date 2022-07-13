@@ -10,6 +10,9 @@
 
 # 1 - Função ----
 fct_testes_chi2_fisher <- function(df){
+  
+  set.seed(44)
+  
   # df <- df_abs_or_pres
   ## Criando dfs base chi2 e de fisher
   ### df_chi2
