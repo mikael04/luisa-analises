@@ -352,10 +352,9 @@ step(sev_binom_mult) # Poderia criar uma função para remover uma variante por 
 # acho que resultaria nisso de qualquer forma.
 
 ## Modelo sugerido pelo step
-summary(sev_binom_mult  <- glm(formula = PIORMB ~ ABCA3_rs1319979593_MU + ABCC2_rs1137968_MU + 
-                                         SLC19A1_rs12659_MD + ABCC2_rs3740066_MR + GSTP1_rs4891_MA + 
-                                         ABCC4_chr1395164412_MA + ABCC1_rs35587_MA + SLC31A1_chr9113258719_MU,
-                                       family = "binomial", data = df_sev_sig_binom_uni))
+summary(sev_binom_mult  <- glm(formula = PIORMB ~ ABCC6_rs12931472_MR + HSP90AA1_rs4947_MD + 
+                                 ABCC1_rs35605_MR,
+                               family = "binomial", data = df_sev_sig_binom_uni))
 
 # Nem todas variantes são significativas a 0.05 também, contudo a remoção de mais variantes
 # pioraria a qualidade do ajuste. Contudo, como o interesse aqui é inferencial, poderia ser feito
@@ -363,9 +362,8 @@ summary(sev_binom_mult  <- glm(formula = PIORMB ~ ABCA3_rs1319979593_MU + ABCC2_
 
 
 ## Continuando remoção até chegarmos no modelo apenas com variantes significativas
-summary(sev_binom_mult  <- glm(formula = PIORMB ~ ABCA3_rs1319979593_MU + ABCC2_rs1137968_MU + 
-                                         SLC19A1_rs12659_MD + GSTP1_rs4891_MA + ABCC1_rs35587_MA,
-                                       family = "binomial", data = df_sev_sig_binom_uni))
+summary(sev_binom_mult  <- glm(formula = PIORMB ~ HSP90AA1_rs4947_MD + ABCC1_rs35605_MR,
+                               family = "binomial", data = df_sev_sig_binom_uni))
 
 hnp::hnp(sev_binom_mult, resid.type = "deviance")
 
