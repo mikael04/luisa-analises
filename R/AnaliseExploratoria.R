@@ -17,6 +17,7 @@ source("R/fct_aux/func_testes_chi2_fisher.R")
 source("R/fct_aux/func_writ_organ_xlsx.R")
 source("R/fct_aux/func_regression_poisson.R")
 source("R/fct_aux/func_regression_binomial.R")
+source("R/fct_aux/func_select_variant.R")
 
 ## 0.1 Parâmetros globais ----
 
@@ -224,8 +225,8 @@ if(switch_write_table){
 ## 5.1 Presença vs ausência ----
 abs_or_pres_sig <- dplyr::inner_join(df_chi2_a_p, df_fisher_a_p, by = "variant") |> 
   dplyr::filter(`p-value(Chi-2)` < p_value | `p-value(Chi-2)-MC` < p_value |
-                  `p-value(fisher)` < p_value | `p-value(fisher)-MC` < p_value) |> 
-  dplyr::select(variant) |> 
+                  `p-value(fisher)` < p_value | `p-value(fisher)-MC` < p_value) |>
+  dplyr::select(variant) |>
   dplyr::pull()
 
 df_abs_or_pres_binom <- df_abs_or_pres |> 
@@ -236,11 +237,42 @@ df_abs_or_pres_binom$`p-value(binomial)` <- round(as.numeric(df_abs_or_pres_bino
 
 df_abs_or_pres_binom <- fct_select_variant(df_abs_or_pres_binom)
 
+## 5.2 Não ulcerados vs ulcerados ----
+ulc_sig <- dplyr::inner_join(df_chi2_u, df_fisher_u, by = "variant") |> 
+  dplyr::filter(`p-value(Chi-2)` < p_value | `p-value(Chi-2)-MC` < p_value |
+                  `p-value(fisher)` < p_value | `p-value(fisher)-MC` < p_value) |>
+  dplyr::select(variant) |>
+  dplyr::pull()
+
+df_ulc_binom <- df_ulc |> 
+  dplyr::select(PIORMB, dplyr::matches(ulc_sig))
+
+df_ulc_binom <- fct_regression_binom_uni(df_ulc_binom)
+df_ulc_binom$`p-value(binomial)` <- round(as.numeric(df_ulc_binom$`p-value(binomial)`), 6)
+
+df_ulc_binom <- fct_select_variant(df_ulc_binom)
+
+
+## 5.3 Não severo vs severo ----
+sev_sig <- dplyr::inner_join(df_chi2_s, df_fisher_s, by = "variant") |> 
+  dplyr::filter(`p-value(Chi-2)` < p_value | `p-value(Chi-2)-MC` < p_value |
+                  `p-value(fisher)` < p_value | `p-value(fisher)-MC` < p_value) |>
+  dplyr::select(variant) |>
+  dplyr::pull()
+
+df_sev_binom <- df_sev |> 
+  dplyr::select(PIORMB, dplyr::matches(sev_sig))
+
+df_sev_binom <- fct_regression_binom_uni(df_sev_binom)
+df_sev_binom$`p-value(binomial)` <- round(as.numeric(df_sev_binom$`p-value(binomial)`), 6)
+
+df_sev_binom <- fct_select_variant(df_sev_binom)
+
 # 6. Regressão binomial multivariada ----
 ## 6.1 Presença vs ausência ----
 
 abs_or_pres_sig_binom_uni <- df_abs_or_pres_binom |> 
-  dplyr::filter(`p-value(binomial)` <= p_value) |> # 16 variantes significativas
+  dplyr::filter(`p-value(binomial)` <= p_value) |> # 18 variantes significativas
   dplyr::pull(1)
 
 df_abs_or_pres_sig_binom_uni <- df_abs_or_pres |> 
@@ -260,6 +292,7 @@ summary(abs_or_pres_binom_mult  <- glm(formula = PIORMB ~ ABCA3_rs1319979593_MU 
 # pioraria a qualidade do ajuste. Contudo, como o interesse aqui é inferencial, poderia ser feito
 # o procedimento de remoção de variantes, uma a uma, até que todas fossem significativas.
 
+
 ## Continuando remoção até chegarmos no modelo apenas com variantes significativas
 summary(abs_or_pres_binom_mult  <- glm(formula = PIORMB ~ ABCA3_rs1319979593_MU + ABCC2_rs1137968_MU + 
                                          SLC19A1_rs12659_MD + GSTP1_rs4891_MA + ABCC1_rs35587_MA,
@@ -270,5 +303,71 @@ hnp::hnp(abs_or_pres_binom_mult, resid.type = "deviance")
 # Agora, como esperado, a distribuição assumida para os dados é muito melhor (e sem dúvidas certa),
 # visto que nem mesmo uma observação sai dos limites de confiança.
 
+## 6.2 Não ulcerados vs ulcerados ----
+
+ulc_sig_binom_uni <- df_ulc_binom |> 
+  dplyr::filter(`p-value(binomial)` <= p_value) |> # 21 variantes significativas
+  dplyr::pull(1)
+
+df_ulc_sig_binom_uni <- df_ulc |> 
+  dplyr::select(PIORMB, dplyr::matches(ulc_sig_binom_uni))
+
+summary(ulc_binom_mult <- glm(PIORMB ~ ., data = df_ulc_sig_binom_uni, family = "binomial"))
+step(ulc_binom_mult) # Poderia criar uma função para remover uma variante por vez, mas
+# acho que resultaria nisso de qualquer forma.
+
+## Modelo sugerido pelo step
+summary(ulc_binom_mult  <- glm(formula = PIORMB ~ ABCC2_rs2273697_MA + GSTP1_rs1695_MD + 
+                                 ABCC6_rs2856585_MA + ABCA3_rs1319979593_MU + SLCO6A1_rs6884141_MR + 
+                                 HSP90AA1_rs4947_MD + GSTA1_rs1051775_MD + ABCC2_rs1137968_MU,
+                               family = "binomial", data = df_ulc_sig_binom_uni))
+
+# Nem todas variantes são significativas a 0.05 também, contudo a remoção de mais variantes
+# pioraria a qualidade do ajuste. Contudo, como o interesse aqui é inferencial, poderia ser feito
+# o procedimento de remoção de variantes, uma a uma, até que todas fossem significativas.
 
 
+## Continuando remoção até chegarmos no modelo apenas com variantes significativas
+summary(ulc_binom_mult  <- glm(formula = PIORMB ~ ABCC2_rs2273697_MA + GSTP1_rs1695_MD + 
+                                 ABCC6_rs2856585_MA + HSP90AA1_rs4947_MD + GSTA1_rs1051775_MD + ABCC2_rs1137968_MU,
+                               family = "binomial", data = df_ulc_sig_binom_uni))
+
+hnp::hnp(ulc_binom_mult, resid.type = "deviance")
+
+# Agora, como esperado, a distribuição assumida para os dados é muito melhor (e sem dúvidas certa),
+# visto que nem mesmo uma observação sai dos limites de confiança.
+
+
+## 6.3 Não severo vs severo ----
+
+sev_sig_binom_uni <- df_sev_binom |> 
+  dplyr::filter(`p-value(binomial)` <= p_value) |> # 8 variantes significativas
+  dplyr::pull(1)
+
+df_sev_sig_binom_uni <- df_sev |> 
+  dplyr::select(PIORMB, dplyr::matches(sev_sig_binom_uni))
+
+summary(sev_binom_mult <- glm(PIORMB ~ ., data = df_sev_sig_binom_uni, family = "binomial"))
+step(sev_binom_mult) # Poderia criar uma função para remover uma variante por vez, mas
+# acho que resultaria nisso de qualquer forma.
+
+## Modelo sugerido pelo step
+summary(sev_binom_mult  <- glm(formula = PIORMB ~ ABCA3_rs1319979593_MU + ABCC2_rs1137968_MU + 
+                                         SLC19A1_rs12659_MD + ABCC2_rs3740066_MR + GSTP1_rs4891_MA + 
+                                         ABCC4_chr1395164412_MA + ABCC1_rs35587_MA + SLC31A1_chr9113258719_MU,
+                                       family = "binomial", data = df_sev_sig_binom_uni))
+
+# Nem todas variantes são significativas a 0.05 também, contudo a remoção de mais variantes
+# pioraria a qualidade do ajuste. Contudo, como o interesse aqui é inferencial, poderia ser feito
+# o procedimento de remoção de variantes, uma a uma, até que todas fossem significativas.
+
+
+## Continuando remoção até chegarmos no modelo apenas com variantes significativas
+summary(sev_binom_mult  <- glm(formula = PIORMB ~ ABCA3_rs1319979593_MU + ABCC2_rs1137968_MU + 
+                                         SLC19A1_rs12659_MD + GSTP1_rs4891_MA + ABCC1_rs35587_MA,
+                                       family = "binomial", data = df_sev_sig_binom_uni))
+
+hnp::hnp(sev_binom_mult, resid.type = "deviance")
+
+# Agora, como esperado, a distribuição assumida para os dados é muito melhor (e sem dúvidas certa),
+# visto que nem mesmo uma observação sai dos limites de confiança.
