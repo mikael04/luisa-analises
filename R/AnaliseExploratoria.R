@@ -18,14 +18,20 @@ source("R/fct_aux/func_writ_organ_xlsx.R")
 source("R/fct_aux/func_regression_poisson.R")
 source("R/fct_aux/func_regression_binomial.R")
 source("R/fct_aux/func_select_variant.R")
+source("R/fct_aux/func_use_MC.R")
 
 ## 0.1 Parâmetros globais ----
 
+## P-value padrão
 p_value <- 0.05
+## Se usaremos Monte Carlo ou não no teste qui-quadrado
+use_MC <- T
 
 options(dplyr.summarise.inform = FALSE)
 switch_teste <- F
 switch_write_table <- F
+switch_write_binom <- F
+switch_overwrite_binom <- F
 
 
 # 1 - Lendo Base de dados ----
@@ -65,7 +71,7 @@ type_group = "pres"
 table <- NULL
 
 if(switch_write_table){
-  return_create_table <- fct_create_table(df_modelos_genotipos, df_chi2_a_p, table, type_group, write_table, switch_teste)
+  return_create_table <- fct_create_table(df_modelos_genotipos, df_chi2_a_p, table, type_group, use_MC, write_table, switch_teste)
   fct_check_return(return_create_table, "create_table", table, type_group, switch_teste)
 }
 
@@ -98,7 +104,7 @@ type_group = "ulc"
 table <- NULL
 
 if(switch_write_table){
-  return_create_table <- fct_create_table(df_modelos_genotipos, df_chi2_u, table, type_group, write_table, switch_teste)
+  return_create_table <- fct_create_table(df_modelos_genotipos, df_chi2_u, table, type_group, use_MC, write_table, switch_teste)
   fct_check_return(return_create_table, "create_table", table, type_group, switch_teste)
 }
 
@@ -133,7 +139,7 @@ type_group = "sev"
 table <- NULL
 
 if(switch_write_table){
-  return_create_table <- fct_create_table(df_modelos_genotipos, df_chi2_s, table, type_group, write_table, switch_teste)
+  return_create_table <- fct_create_table(df_modelos_genotipos, df_chi2_s, table, type_group, use_MC, write_table, switch_teste)
   fct_check_return(return_create_table, "create_table", table, type_group, switch_teste)
 }
 
@@ -224,8 +230,8 @@ if(switch_write_table){
 # 5. Regressão binomial univariada ----
 ## 5.1 Presença vs ausência ----
 abs_or_pres_sig <- dplyr::inner_join(df_chi2_a_p, df_fisher_a_p, by = "variant") |> 
-  dplyr::filter(`p-value(Chi-2)` < p_value | `p-value(Chi-2)-MC` < p_value |
-                  `p-value(fisher)` < p_value | `p-value(fisher)-MC` < p_value) |>
+  # dplyr::filter(`p-value(Chi-2)` < p_value | `p-value(Chi-2)-MC` < p_value |
+  #                 `p-value(fisher)` < p_value | `p-value(fisher)-MC` < p_value) |>
   dplyr::select(variant) |>
   dplyr::pull()
 
@@ -233,14 +239,29 @@ df_abs_or_pres_binom <- df_abs_or_pres |>
   dplyr::select(PIORMB, dplyr::matches(abs_or_pres_sig))
 
 df_abs_or_pres_binom <- fct_regression_binom_uni(df_abs_or_pres_binom)
-df_abs_or_pres_binom$`p-value(binomial)` <- round(as.numeric(df_abs_or_pres_binom$`p-value(binomial)`), 6)
+df_abs_or_pres_binom$`p-value(binomial)` <- round(as.numeric(df_abs_or_pres_binom$`p-value(binomial)`), 8)
+
+switch_write_binom <- T
+if(switch_write_table & switch_write_binom){
+  if(switch_overwrite_binom){
+    file.remove("data-raw/tabelas_modelos/binomial/univariada/binomial_uni_pres_all.xlsx")
+  }
+  openxlsx::write.xlsx(df_abs_or_pres_binom, "data-raw/tabelas_modelos/binomial/univariada/binomial_uni_pres_all.xlsx")
+}
 
 df_abs_or_pres_binom <- fct_select_variant(df_abs_or_pres_binom)
 
+if(switch_write_table & switch_write_binom){
+  if(switch_overwrite_binom){
+    file.remove("data-raw/tabelas_modelos/binomial/univariada/binomial_uni_pres_sel.xlsx")
+  }
+  openxlsx::write.xlsx(df_ulc_binom, "data-raw/tabelas_modelos/binomial/univariada/binomial_uni_pres_sel.xlsx")
+}
+
 ## 5.2 Não ulcerados vs ulcerados ----
 ulc_sig <- dplyr::inner_join(df_chi2_u, df_fisher_u, by = "variant") |> 
-  dplyr::filter(`p-value(Chi-2)` < p_value | `p-value(Chi-2)-MC` < p_value |
-                  `p-value(fisher)` < p_value | `p-value(fisher)-MC` < p_value) |>
+  # dplyr::filter(`p-value(Chi-2)` < p_value | `p-value(Chi-2)-MC` < p_value |
+  #                 `p-value(fisher)` < p_value | `p-value(fisher)-MC` < p_value) |>
   dplyr::select(variant) |>
   dplyr::pull()
 
@@ -248,15 +269,29 @@ df_ulc_binom <- df_ulc |>
   dplyr::select(PIORMB, dplyr::matches(ulc_sig))
 
 df_ulc_binom <- fct_regression_binom_uni(df_ulc_binom)
-df_ulc_binom$`p-value(binomial)` <- round(as.numeric(df_ulc_binom$`p-value(binomial)`), 6)
+df_ulc_binom$`p-value(binomial)` <- round(as.numeric(df_ulc_binom$`p-value(binomial)`), 8)
+
+switch_write_binom <- T
+if(switch_write_table & switch_write_binom){
+  if(switch_overwrite_binom){
+    file.remove("data-raw/tabelas_modelos/binomial/univariada/binomial_uni_ulc_all.xlsx")
+  }
+  openxlsx::write.xlsx(df_ulc_binom, "data-raw/tabelas_modelos/binomial/univariada/binomial_uni_ulc_all.xlsx")
+}
 
 df_ulc_binom <- fct_select_variant(df_ulc_binom)
 
+if(switch_write_table & switch_write_binom){
+  if(switch_overwrite_binom){
+    file.remove("data-raw/tabelas_modelos/binomial/univariada/binomial_uni_ulc_sel.xlsx")
+  }
+  openxlsx::write.xlsx(df_ulc_binom, "data-raw/tabelas_modelos/binomial/univariada/binomial_uni_ulc_sel.xlsx")
+}
 
 ## 5.3 Não severo vs severo ----
 sev_sig <- dplyr::inner_join(df_chi2_s, df_fisher_s, by = "variant") |> 
-  dplyr::filter(`p-value(Chi-2)` < p_value | `p-value(Chi-2)-MC` < p_value |
-                  `p-value(fisher)` < p_value | `p-value(fisher)-MC` < p_value) |>
+  # dplyr::filter(`p-value(Chi-2)` < p_value | `p-value(Chi-2)-MC` < p_value |
+  #                 `p-value(fisher)` < p_value | `p-value(fisher)-MC` < p_value) |>
   dplyr::select(variant) |>
   dplyr::pull()
 
@@ -264,9 +299,24 @@ df_sev_binom <- df_sev |>
   dplyr::select(PIORMB, dplyr::matches(sev_sig))
 
 df_sev_binom <- fct_regression_binom_uni(df_sev_binom)
-df_sev_binom$`p-value(binomial)` <- round(as.numeric(df_sev_binom$`p-value(binomial)`), 6)
+df_sev_binom$`p-value(binomial)` <- round(as.numeric(df_sev_binom$`p-value(binomial)`), 8)
+
+switch_write_binom <- T
+if(switch_write_table & switch_write_binom){
+  if(switch_overwrite_binom){
+    file.remove("data-raw/tabelas_modelos/binomial/univariada/binomial_uni_sev_all.xlsx")
+  }
+  openxlsx::write.xlsx(df_sev_binom, "data-raw/tabelas_modelos/binomial/univariada/binomial_uni_sev_all.xlsx")
+}
 
 df_sev_binom <- fct_select_variant(df_sev_binom)
+
+if(switch_write_table & switch_write_binom){
+  if(switch_overwrite_binom){
+    file.remove("data-raw/tabelas_modelos/binomial/univariada/binomial_uni_sev_sel.xlsx")
+  }
+  openxlsx::write.xlsx(df_sev_binom, "data-raw/tabelas_modelos/binomial/univariada/binomial_uni_sev_sel.xlsx")
+}
 
 # 6. Regressão binomial multivariada ----
 ## 6.1 Presença vs ausência ----
