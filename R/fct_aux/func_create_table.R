@@ -11,7 +11,7 @@
 # 1 - Função ----
 
 ## Função que recebe tabela com colunas genótipo (MO) e modelo aditivo
-fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, write_table, teste_print){
+fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, use_MC, write_table, teste_print){
   if(is.null(table)){
     ####################################################################### #
     ## Gerando para o aditivo
@@ -33,7 +33,9 @@ fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, w
     #### Adicionar p-value a tabela
     df_chi2_adit <- fct_break_gene_variant_ends(df_chi2, "_MA")
     
-    df_chi2_adit$`p-value(Chi-2)` <- round(as.numeric(df_chi2_adit$`p-value(Chi-2)`), 4)
+    ## Alterando para usar o modelo com simulação de monte carlo
+    df_chi2_adit <- fct_use_MC_chi2(df_chi2_adit, use_MC)
+    
     df_tabela_aditivo_p <- dplyr::inner_join(df_tabela_aditivo, df_chi2_adit, by = c("Gene", "variant"))
     
     ## Calculando percentual da coluna de frequencia
@@ -59,7 +61,9 @@ fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, w
     #### Adicionar p-value a tabela
     df_chi2_rec <- fct_break_gene_variant_ends(df_chi2, "_MR")
     
-    df_chi2_rec$`p-value(Chi-2)` <- round(as.numeric(df_chi2_rec$`p-value(Chi-2)`), 4)
+    ## Alterando para usar o modelo com simulação de monte carlo
+    df_chi2_rec <- fct_use_MC_chi2(df_chi2_rec, use_MC)
+    
     df_tabela_recessivo_p <- dplyr::inner_join(df_tabela_recessivo, df_chi2_rec, by = c("Gene", "variant"))
     
     ## Calculando percentual da coluna de frequencia
@@ -86,7 +90,9 @@ fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, w
     #### Adicionar p-value a tabela
     df_chi2_dom <- fct_break_gene_variant_ends(df_chi2, "_MR")
     
-    df_chi2_dom$`p-value(Chi-2)` <- round(as.numeric(df_chi2_dom$`p-value(Chi-2)`), 4)
+    ## Alterando para usar o modelo com simulação de monte carlo
+    df_chi2_dom <- fct_use_MC_chi2(df_chi2_dom, use_MC)
+    
     df_tabela_dominante_p <- dplyr::inner_join(df_tabela_dominante, df_chi2_rec, by = c("Gene", "variant"))
     
     ## Calculando percentual da coluna de frequencia
@@ -117,7 +123,9 @@ fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, w
       #### Adicionar p-value a tabela
       df_chi2_adit <- fct_break_gene_variant_ends(df_chi2, "_MA")
       
-      df_chi2_adit$`p-value(Chi-2)` <- round(as.numeric(df_chi2_adit$`p-value(Chi-2)`), 4)
+      ## Alterando para usar o modelo com simulação de monte carlo
+      df_chi2_adit <- fct_use_MC_chi2(df_chi2_adit, use_MC)
+      
       df_tabela_aditivo_p <- dplyr::inner_join(df_tabela_aditivo, df_chi2_adit, by = c("Gene", "variant"))
       
       ## Calculando percentual da coluna de frequencia
@@ -144,7 +152,9 @@ fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, w
       #### Adicionar p-value a tabela
       df_chi2_rec <- fct_break_gene_variant_ends(df_chi2, "_MR")
       
-      df_chi2_rec$`p-value(Chi-2)` <- round(as.numeric(df_chi2_rec$`p-value(Chi-2)`), 4)
+      ## Alterando para usar o modelo com simulação de monte carlo
+      df_chi2_rec <- fct_use_MC_chi2(df_chi2_rec, use_MC)
+      
       df_tabela_recessivo_p <- dplyr::inner_join(df_tabela_recessivo, df_chi2_rec, by = c("Gene", "variant"))
       
       ## Calculando percentual da coluna de frequencia
@@ -172,7 +182,9 @@ fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, w
       #### Adicionar p-value a tabela
       df_chi2_dom <- fct_break_gene_variant_ends(df_chi2, "_MR")
       
-      df_chi2_dom$`p-value(Chi-2)` <- round(as.numeric(df_chi2_dom$`p-value(Chi-2)`), 4)
+      ## Alterando para usar o modelo com simulação de monte carlo
+      df_chi2_dom <- fct_use_MC_chi2(df_chi2_dom, use_MC)
+      
       df_tabela_dominante_p <- dplyr::inner_join(df_tabela_dominante, df_chi2_rec, by = c("Gene", "variant"))
       
       ## Calculando percentual da coluna de frequencia
@@ -201,7 +213,9 @@ fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, w
       #### Adicionar p-value a tabela
       df_chi2_un <- fct_break_gene_variant_ends(df_chi2, "_MU")
       
-      df_chi2_un$`p-value(Chi-2)` <- round(as.numeric(df_chi2_un$`p-value(Chi-2)`), 4)
+      ## Alterando para usar o modelo com simulação de monte carlo
+      df_chi2_un <- fct_use_MC_chi2(df_chi2_un, use_MC)
+      
       df_tabela_unico_p <- dplyr::inner_join(df_tabela_unico, df_chi2_un, by = c("Gene", "variant"))
       
       ## Calculando percentual da coluna de frequencia
