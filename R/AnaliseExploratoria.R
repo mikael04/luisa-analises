@@ -14,7 +14,7 @@ source("R/fct_aux/func_remove_columns.R")
 source("R/fct_aux/func_tables_aux.R")
 source("R/fct_aux/func_test_assump.R")
 source("R/fct_aux/func_testes_chi2_fisher.R")
-source("R/fct_aux/func_writ_organ_xlsx.R")
+source("R/fct_aux/func_merge_write_xlsx.R")
 source("R/fct_aux/func_regression_poisson.R")
 source("R/fct_aux/func_regression_binomial.R")
 source("R/fct_aux/func_select_variant.R")
@@ -29,7 +29,7 @@ use_MC <- T
 
 options(dplyr.summarise.inform = FALSE)
 switch_teste <- F
-switch_write_table <- F
+switch_write_table <- T
 switch_write_binom <- F
 switch_overwrite_binom <- F
 
@@ -71,7 +71,11 @@ type_group = "pres"
 table <- NULL
 
 if(switch_write_table){
-  return_create_table <- fct_create_table(df_modelos_genotipos, df_chi2_a_p, table, type_group, use_MC, write_table, switch_teste)
+  ## Pasta onde serão escritas as tabelas
+  path <- "data-raw/tabelas_modelos/"
+  return_create_table <- fct_create_table(df_modelos_genotipos, df_chi2_a_p, table, 
+                                          type_group, path,
+                                          use_MC, write_table, switch_teste)
   fct_check_return(return_create_table, "create_table", table, type_group, switch_teste)
 }
 
@@ -104,7 +108,11 @@ type_group = "ulc"
 table <- NULL
 
 if(switch_write_table){
-  return_create_table <- fct_create_table(df_modelos_genotipos, df_chi2_u, table, type_group, use_MC, write_table, switch_teste)
+  ## Pasta onde serão escritas as tabelas
+  path <- "data-raw/tabelas_modelos/"
+  return_create_table <- fct_create_table(df_modelos_genotipos, df_chi2_u, table, 
+                                          type_group, path,
+                                          use_MC, write_table, switch_teste)
   fct_check_return(return_create_table, "create_table", table, type_group, switch_teste)
 }
 
@@ -139,7 +147,11 @@ type_group = "sev"
 table <- NULL
 
 if(switch_write_table){
-  return_create_table <- fct_create_table(df_modelos_genotipos, df_chi2_s, table, type_group, use_MC, write_table, switch_teste)
+  ## Pasta onde serão escritas as tabelas
+  path <- "data-raw/tabelas_modelos/"
+  return_create_table <- fct_create_table(df_modelos_genotipos, df_chi2_s, table, 
+                                          type_group, path,
+                                          use_MC, write_table, switch_teste)
   fct_check_return(return_create_table, "create_table", table, type_group, switch_teste)
 }
 
