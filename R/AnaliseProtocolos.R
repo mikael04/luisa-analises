@@ -131,8 +131,8 @@ tryCatch({
   }
 )
 
-## 2.3 - Outros agrupamentos ----
-## Teste 3 será rodado para os agrupamentos: 
+## 2.4 - Outros agrupamentos ----
+## Teste 4 será rodado para os agrupamentos: 
 ## 1 - não possui (ausencia) VS possui (presenca) de mucosite bocal
 ## 2 - não ulcerados vs ulcerados
 ## 3 - não severo vs severo
@@ -142,7 +142,7 @@ tryCatch({
 df_others <- df_full |>
   dplyr::filter(Protocolo %in% c(3,4,5,7,8))
 
-path_tables <- "data-raw/tabelas_modelos_protocolos/mtx/"
+path_tables <- "data-raw/tabelas_modelos_protocolos/outros/"
 if(!dir.exists(path_tables)){
   dir.create(path_tables)
 }
@@ -175,7 +175,7 @@ tryCatch({
 # 8 - CTX + DOXO
 # 
 # Grupos:
-#   1 - DOXO predomina (2)
+# 1 - DOXO predomina (2)
 # 2 - CTX predomina (6)
 # 3 - MTX altas doses (1)
 # 4 - Outros (3, 4, 5, 7, 8)
