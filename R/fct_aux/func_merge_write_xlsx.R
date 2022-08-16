@@ -10,7 +10,7 @@
 # 0 - Scripts e bibliotecas ----
 
 # 1 - Função ----
-fct_merge_cels <- function(df_merge, excel_name){
+fct_merge_cels <- function(df_merge, path, excel_name){
   # df_merge <- df_tabela_aditivo_p
   ## Criar planilha
   library(openxlsx)
@@ -27,7 +27,7 @@ fct_merge_cels <- function(df_merge, excel_name){
   fct_merge_cels_variant(df_aux, wb)
   
   ## Save workbook
-  saveWorkbook(wb, paste0("data-raw/tabelas_modelos/", excel_name ,".xlsx"), overwrite = TRUE)
+  saveWorkbook(wb, paste0(path, excel_name ,".xlsx"), overwrite = TRUE)
 }
 
 ## Ordenando df para próximos métodos

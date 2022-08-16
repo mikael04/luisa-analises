@@ -7,11 +7,17 @@
 ##################################################################### #
 
 # 0 - Scripts e bibliotecas ----
+source("R/fct_aux/func_calc_perc.R")
+source("R/fct_aux/func_merge_write_xlsx.R")
+source("R/fct_aux/func_remove_columns.R")
+source("R/fct_aux/func_tables_aux.R")
+source("R/fct_aux/func_use_MC.R")
 
 # 1 - Função ----
 
 ## Função que recebe tabela com colunas genótipo (MO) e modelo aditivo
-fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, use_MC, write_table, teste_print){
+fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, path,
+                             use_MC, write_table, teste_print){
   if(is.null(table)){
     ####################################################################### #
     ## Gerando para o aditivo
@@ -43,7 +49,7 @@ fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, u
     
     #### Criar tabela XLSX do df criado (modelo aditivo)
     excel_name <- paste0("tabela_modelo_aditivo_", type_group)
-    fct_merge_cels(df_tabela_aditivo_p_perc, excel_name)
+    fct_merge_cels(df_tabela_aditivo_p_perc, path, excel_name)
     
     if(teste){
       print("Finalizando geração de tabela dos modelos aditivos")
@@ -71,7 +77,7 @@ fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, u
     
     #### Criar tabela XLSX do df criado (modelo recessivo)
     excel_name <- paste0("tabela_modelo_recessivo_", type_group)
-    fct_merge_cels(df_tabela_recessivo_p_perc, excel_name)
+    fct_merge_cels(df_tabela_recessivo_p_perc, path, excel_name)
     
     if(teste){
       print("Finalizando geração de tabela dos modelos recessivos")
@@ -101,7 +107,7 @@ fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, u
     #### Criar tabela XLSX do df criado (modelo dominante)
     
     excel_name <- paste0("tabela_modelo_dominante_", type_group)
-    fct_merge_cels(df_tabela_dominante_p_perc, excel_name)
+    fct_merge_cels(df_tabela_dominante_p_perc, path, excel_name)
     
     if(teste){
       print("Finalizando geração de tabela dos modelos dominantes")
@@ -133,7 +139,7 @@ fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, u
       
       #### Criar tabela XLSX do df criado (modelo aditivo)
       excel_name <- paste0("tabela_modelo_aditivo_", type_group)
-      fct_merge_cels(df_tabela_aditivo_p_perc, excel_name)
+      fct_merge_cels(df_tabela_aditivo_p_perc, path, excel_name)
       
       if(teste){
         print("Finalizando geração de tabela dos modelos aditivos")
@@ -162,7 +168,7 @@ fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, u
       
       #### Criar tabela XLSX do df criado (modelo recessivo)
       excel_name <- paste0("tabela_modelo_recessivo_", type_group)
-      fct_merge_cels(df_tabela_recessivo_p_perc, excel_name)
+      fct_merge_cels(df_tabela_recessivo_p_perc, path, excel_name)
       
       if(teste){
         print("Finalizando geração de tabela dos modelos recessivos")
@@ -193,7 +199,7 @@ fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, u
       #### Criar tabela XLSX do df criado (modelo dominante)
       
       excel_name <- paste0("tabela_modelo_dominante_", type_group)
-      fct_merge_cels(df_tabela_dominante_p_perc, excel_name)
+      fct_merge_cels(df_tabela_dominante_p_perc, path, excel_name)
       
       if(teste){
         print("Finalizando geração de tabela dos modelos dominantes")
@@ -224,7 +230,7 @@ fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, u
       #### Criar tabela XLSX do df criado (modelo unico)
       
       excel_name <- paste0("tabela_modelo_unico_", type_group)
-      fct_merge_cels(df_tabela_unico_p_perc, excel_name)
+      fct_merge_cels(df_tabela_unico_p_perc, path, excel_name)
       
       if(teste){
         print("Finalizando geração de tabela dos modelos unicos")
