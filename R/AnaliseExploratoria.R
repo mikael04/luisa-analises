@@ -248,8 +248,11 @@ abs_or_pres_sig <- dplyr::inner_join(df_chi2_a_p, df_fisher_a_p, by = "variant")
   dplyr::pull()
 
 df_abs_or_pres_binom <- df_abs_or_pres |> 
-  dplyr::select(PIORMB, dplyr::matches(abs_or_pres_sig))
-
+  dplyr::select(PIORMB, dplyr::matches(abs_or_pres_sig)) |>
+  dplyr::mutate(dplyr::across(where(~length(unique(.)) > 1),
+                              factor,
+                              levels = c(0, 1, 2)))
+  
 df_abs_or_pres_binom <- fct_regression_binom_uni(df_abs_or_pres_binom)
 df_abs_or_pres_binom$`p-value(binomial)` <- round(as.numeric(df_abs_or_pres_binom$`p-value(binomial)`), 8)
 
@@ -278,7 +281,10 @@ ulc_sig <- dplyr::inner_join(df_chi2_u, df_fisher_u, by = "variant") |>
   dplyr::pull()
 
 df_ulc_binom <- df_ulc |> 
-  dplyr::select(PIORMB, dplyr::matches(ulc_sig))
+  dplyr::select(PIORMB, dplyr::matches(ulc_sig)) |>
+  dplyr::mutate(dplyr::across(where(~length(unique(.)) > 1),
+                              factor,
+                              levels = c(0, 1, 2)))
 
 df_ulc_binom <- fct_regression_binom_uni(df_ulc_binom)
 df_ulc_binom$`p-value(binomial)` <- round(as.numeric(df_ulc_binom$`p-value(binomial)`), 8)
@@ -308,7 +314,10 @@ sev_sig <- dplyr::inner_join(df_chi2_s, df_fisher_s, by = "variant") |>
   dplyr::pull()
 
 df_sev_binom <- df_sev |> 
-  dplyr::select(PIORMB, dplyr::matches(sev_sig))
+  dplyr::select(PIORMB, dplyr::matches(sev_sig)) |>
+  dplyr::mutate(dplyr::across(where(~length(unique(.)) > 1),
+                              factor,
+                              levels = c(0, 1, 2)))
 
 df_sev_binom <- fct_regression_binom_uni(df_sev_binom)
 df_sev_binom$`p-value(binomial)` <- round(as.numeric(df_sev_binom$`p-value(binomial)`), 8)
@@ -337,8 +346,11 @@ abs_or_pres_sig_binom_uni <- df_abs_or_pres_binom |>
   dplyr::filter(`p-value(binomial)` <= p_value) |> # 18 variantes significativas
   dplyr::pull(1)
 
-df_abs_or_pres_sig_binom_uni <- df_abs_or_pres |> 
-  dplyr::select(PIORMB, dplyr::matches(abs_or_pres_sig_binom_uni))
+df_abs_or_pres_sig_binom_uni <-  df_abs_or_pres |> 
+  dplyr::select(PIORMB, dplyr::matches(abs_or_pres_sig_binom_uni)) |>
+  dplyr::mutate(dplyr::across(where(~length(unique(.)) > 1),
+                              factor,
+                              levels = c(0, 1, 2)))
 
 summary(abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_abs_or_pres_sig_binom_uni, family = "binomial"))
 step(abs_or_pres_binom_mult) # Poderia criar uma função para remover uma variante por vez, mas
@@ -372,7 +384,10 @@ ulc_sig_binom_uni <- df_ulc_binom |>
   dplyr::pull(1)
 
 df_ulc_sig_binom_uni <- df_ulc |> 
-  dplyr::select(PIORMB, dplyr::matches(ulc_sig_binom_uni))
+  dplyr::select(PIORMB, dplyr::matches(ulc_sig_binom_uni)) |>
+  dplyr::mutate(dplyr::across(where(~length(unique(.)) > 1),
+                              factor,
+                              levels = c(0, 1, 2)))
 
 summary(ulc_binom_mult <- glm(PIORMB ~ ., data = df_ulc_sig_binom_uni, family = "binomial"))
 step(ulc_binom_mult) # Poderia criar uma função para remover uma variante por vez, mas
@@ -407,7 +422,10 @@ sev_sig_binom_uni <- df_sev_binom |>
   dplyr::pull(1)
 
 df_sev_sig_binom_uni <- df_sev |> 
-  dplyr::select(PIORMB, dplyr::matches(sev_sig_binom_uni))
+  dplyr::select(PIORMB, dplyr::matches(sev_sig_binom_uni)) |>
+  dplyr::mutate(dplyr::across(where(~length(unique(.)) > 1),
+                              factor,
+                              levels = c(0, 1, 2)))
 
 summary(sev_binom_mult <- glm(PIORMB ~ ., data = df_sev_sig_binom_uni, family = "binomial"))
 step(sev_binom_mult) # Poderia criar uma função para remover uma variante por vez, mas
