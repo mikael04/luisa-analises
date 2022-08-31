@@ -109,10 +109,10 @@ fct_table_rec_get_names <- function(df_geno_others_sel, cols_names){
   # df_geno_others_sel <- df_recessivo_names
   df_recessivo_test <- df_geno_others_sel |>
     dplyr::select(all_of(cols_names)) |> ## Cria o df de teste para um modelo
-    dplyr::group_by(across(cols_names)) |> ## Determina o agrupamento
+    dplyr::group_by(across(all_of(cols_names))) |> ## Determina o agrupamento
     dplyr::summarise() |> 
     dplyr::ungroup() |> 
-    dplyr::group_by(across(cols_names[2])) |> ## Define outro agrupamento
+    dplyr::group_by(across(all_of(cols_names[2]))) |> ## Define outro agrupamento
     dplyr::mutate(new_geno = paste((!!as.symbol(cols_names[1])), collapse = " or ")) |>
     dplyr::select(all_of(c(cols_names[2], "new_geno"))) |> ## remove a primeira coluna, mantendo apenas a coluna com valores agrupados
     dplyr::distinct(new_geno) |> 
