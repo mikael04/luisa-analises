@@ -24,6 +24,10 @@ fct_qui2_fisher <- function(df_full, path_tables, debug){
     dplyr::select(PIORMB, dplyr::ends_with(c("MA", "MR", "MD", "MU"))) |> 
     dplyr::mutate(PIORMB = ifelse(PIORMB > 0, 1, 0))
   
+  # df_abs_or_pres_aux <- df_abs_or_pres
+  df_abs_or_pres[sapply(df_abs_or_pres, is.numeric)] <- lapply(df_abs_or_pres[sapply(df_abs_or_pres, is.numeric)], 
+                                         as.factor)
+  
   ### 2.1.1 Rodando testes chi-2 e de fisher (ausencia vs presença) ----
   list_testes <- fct_testes_chi2_fisher(df_abs_or_pres)
   
@@ -58,6 +62,9 @@ fct_qui2_fisher <- function(df_full, path_tables, debug){
   df_ulc <- df_full |> 
     dplyr::select(PIORMB, dplyr::ends_with(c("MA", "MR", "MD", "MU"))) |> 
     dplyr::mutate(PIORMB = ifelse(PIORMB > 1, 1, 0))
+  
+  df_ulc[sapply(df_ulc, is.numeric)] <- lapply(df_ulc[sapply(df_ulc, is.numeric)], 
+                                                               as.factor)
   
   ### 2.2.1 Rodando testes chi-2 e de fisher (não ulcerados vs ulcerados) ----
   list_testes <- fct_testes_chi2_fisher(df_ulc)
@@ -94,6 +101,9 @@ fct_qui2_fisher <- function(df_full, path_tables, debug){
   df_sev <- df_full |> 
     dplyr::select(PIORMB, dplyr::ends_with(c("MA", "MR", "MD", "MU"))) |> 
     dplyr::mutate(PIORMB = ifelse(PIORMB > 2, 1, 0))
+  
+  df_sev[sapply(df_sev, is.numeric)] <- lapply(df_sev[sapply(df_sev, is.numeric)], 
+                                               as.factor)
   
   ### 2.3.1 Rodando testes chi-2 e de fisher (não severo vs severo) ----
   list_testes <- fct_testes_chi2_fisher(df_sev)

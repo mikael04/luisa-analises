@@ -94,12 +94,12 @@ fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, p
     df_tabela_dominante <- fct_table_rec_dom_un(df_geno_dominante, type_group)
     
     #### Adicionar p-value a tabela
-    df_chi2_dom <- fct_break_gene_variant_ends(df_chi2, "_MR")
+    df_chi2_dom <- fct_break_gene_variant_ends(df_chi2, "_MD")
     
     ## Alterando para usar o modelo com simulação de monte carlo
     df_chi2_dom <- fct_use_MC_chi2(df_chi2_dom, use_MC)
     
-    df_tabela_dominante_p <- dplyr::inner_join(df_tabela_dominante, df_chi2_rec, by = c("Gene", "variant"))
+    df_tabela_dominante_p <- dplyr::inner_join(df_tabela_dominante, df_chi2_dom, by = c("Gene", "variant"))
     
     ## Calculando percentual da coluna de frequencia
     df_tabela_dominante_p_perc <- fct_calc_perc(df_tabela_dominante_p)
@@ -127,7 +127,7 @@ fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, p
       df_tabela_aditivo <- fct_table_ad(df_geno_aditivo, type_group)
       
       #### Adicionar p-value a tabela
-      df_chi2_adit <- fct_break_gene_variant_ends(df_chi2, "_MA")
+      df_chi2_adit <- fct_break_gene_variant_ends(df_chi2, "_MO")
       
       ## Alterando para usar o modelo com simulação de monte carlo
       df_chi2_adit <- fct_use_MC_chi2(df_chi2_adit, use_MC)
@@ -186,12 +186,12 @@ fct_create_table <- function(df_modelos_genotipos, df_chi2, table, type_group, p
       df_tabela_dominante <- fct_table_rec_dom_un(df_geno_dominante, type_group)
       
       #### Adicionar p-value a tabela
-      df_chi2_dom <- fct_break_gene_variant_ends(df_chi2, "_MR")
+      df_chi2_dom <- fct_break_gene_variant_ends(df_chi2, "_MD")
       
       ## Alterando para usar o modelo com simulação de monte carlo
       df_chi2_dom <- fct_use_MC_chi2(df_chi2_dom, use_MC)
       
-      df_tabela_dominante_p <- dplyr::inner_join(df_tabela_dominante, df_chi2_rec, by = c("Gene", "variant"))
+      df_tabela_dominante_p <- dplyr::inner_join(df_tabela_dominante, df_chi2_dom, by = c("Gene", "variant"))
       
       ## Calculando percentual da coluna de frequencia
       df_tabela_dominante_p_perc <- fct_calc_perc(df_tabela_dominante_p)
