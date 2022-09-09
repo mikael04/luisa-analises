@@ -8,6 +8,7 @@
 # 0 - Scripts e bibliotecas ----
 library(dplyr)
 source("R/fct_aux/func_qui2_fisher.R")
+source("R/fct_aux/func_model_variant_selection.R")
 
 
 ## 0.1 Parâmetros globais ----
@@ -19,7 +20,7 @@ use_MC <- T
 
 options(dplyr.summarise.inform = FALSE)
 switch_teste <- F
-switch_write_table <- T
+switch_write_table <- F
 switch_write_binom <- F
 switch_overwrite_binom <- F
 
@@ -32,40 +33,7 @@ set.seed(42)
 
 # 2 - Qui-quadrado e teste de fisher ----
 
-## 2.1 - DOXO ----
-## Teste 1 será rodado para os agrupamentos: 
-## 1 - não possui (ausencia) VS possui (presenca) de mucosite bocal
-## 2 - não ulcerados vs ulcerados
-## 3 - não severo vs severo
-## Ajustaremos a base de dados para o novo agrupamento (utilizando a variavel "PIORMB")
-
-## DF agrupado para DOXO
-df_doxo <- df_full |>
-  dplyr::filter(Protocolo == 2)
-
-path_tables <- "data-raw/tabelas_modelos_protocolos/doxo/"
-if(!dir.exists(path_tables)){
-  dir.create(path_tables)
-}
-
-tryCatch({
-  message("Iniciando qui-2 e fisher para protocolo DOXO dominante")
-  fct_qui2_fisher(df_doxo, path_tables, debug)
-  },
-  error=function(cond) {
-    message("Erro ao executar a função")
-    message("Mensagem original:")
-    message(cond)
-    # Choose a return value in case of error
-    return(NA)
-  },
-  finally={
-    message("")
-    message("Finalizando execução para protocolo DOXO dominante")
-  }
-)
-
-## 2.2 - CTX ----
+## 2.1 - CTX ----
 ## Teste 2 será rodado para os agrupamentos: 
 ## 1 - não possui (ausencia) VS possui (presenca) de mucosite bocal
 ## 2 - não ulcerados vs ulcerados
@@ -95,6 +63,39 @@ tryCatch({
   finally={
     message("")
     message("Finalizando execução para protocolo CTX predomina")
+  }
+)
+
+## 2.2 - DOXO ----
+## Teste 1 será rodado para os agrupamentos: 
+## 1 - não possui (ausencia) VS possui (presenca) de mucosite bocal
+## 2 - não ulcerados vs ulcerados
+## 3 - não severo vs severo
+## Ajustaremos a base de dados para o novo agrupamento (utilizando a variavel "PIORMB")
+
+## DF agrupado para DOXO
+df_doxo <- df_full |>
+  dplyr::filter(Protocolo == 2)
+
+path_tables <- "data-raw/tabelas_modelos_protocolos/doxo/"
+if(!dir.exists(path_tables)){
+  dir.create(path_tables)
+}
+
+tryCatch({
+    message("Iniciando qui-2 e fisher para protocolo DOXO dominante")
+    fct_qui2_fisher(df_doxo, path_tables, debug)
+  },
+  error=function(cond) {
+    message("Erro ao executar a função")
+    message("Mensagem original:")
+    message(cond)
+    # Choose a return value in case of error
+    return(NA)
+  },
+  finally={
+    message("")
+    message("Finalizando execução para protocolo DOXO dominante")
   }
 )
 
@@ -139,7 +140,7 @@ tryCatch({
 ## Ajustaremos a base de dados para o novo agrupamento (utilizando a variavel "PIORMB")
 
 ## DF agrupado para outros
-df_others <- df_full |>
+df_out <- df_full |>
   dplyr::filter(Protocolo %in% c(3,4,5,7,8))
 
 path_tables <- "data-raw/tabelas_modelos_protocolos/outros/"
@@ -149,7 +150,7 @@ if(!dir.exists(path_tables)){
 
 tryCatch({
     message("Iniciando qui-2 e fisher para protocolo outros agrupamentos de protocolos")
-    fct_qui2_fisher(df_others, path_tables, debug)
+    fct_qui2_fisher(df_out, path_tables, debug)
   },
   error=function(cond) {
     message("Erro ao executar a função")
@@ -164,7 +165,244 @@ tryCatch({
   }
 )
 
+# 3. Regressão binomial multivariada ----
+print("Iniciando regressão binomial multivariada")
+## 3.1 - CTX ----
+
+### 3.1.1 - Presença ou ausência ----
+#### 3.1.1.1 - Variantes selecionadas pela cliente (MA, MD, MR) ----
+ctx_pres_aus <- fct_mod_var_ctx_pres()
+
+## Agroup = 0 -> Presença ausência
+agroup = 0
+
+## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
+if(!is.null(ctx_pres_aus)){
+  df_ctx_pres_aus <- fct_mod_var_out_df(df_ctx, ctx_pres_aus, agroup, p_value)
+  #### 3.1.1.2 Modelo com variantes selecionadas ----
+  print(summary(ctx_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_ctx_pres_aus, family = "binomial")))
+  
+  hnp::hnp(ctx_abs_or_pres_binom_mult, resid.type = "deviance")
+}else{
+  print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo CTX")
+}
+# ## Não utilizaremos o step, já que as features já foram definidas
+# step(ctx_abs_or_pres_binom_mult) # Poderia criar uma função para remover uma variante por vez, mas
+# acho que resultaria nisso de qualquer forma.
+#
+# ## Modelo com variantes sugeridas pelo step
+# summary(ctx_abs_or_pres_binom_mult <- glm(PIORMB ~ GSTP1_rs1695_MA + HSP90AA1_rs4947_MA +
+#                                             HSP90AA1_rs8005905_MA + SLC19A1_rs12659_MR, data = df_ctx_pres_aus, family = "binomial"))
 # 
+# hnp::hnp(ctx_abs_or_pres_binom_mult, resid.type = "deviance")
+
+# Agora, como esperado, a distribuição assumida para os dados é muito melhor (e sem dúvidas certa),
+# visto que nem mesmo uma observação sai dos limites de confiança.
+
+
+### 3.1.2 - Severidade ----
+#### 3.1.2.1 - Variantes selecionadas pela cliente (MA, MD, MR) ----
+ctx_sev <- fct_mod_var_ctx_sev()
+
+## Agroup = 2 -> Severidade
+agroup = 2
+
+## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
+if(!is.null(ctx_sev)){
+  df_ctx_sev <- fct_mod_var_out_df(df_ctx, ctx_sev, agroup, p_value)
+  #### 3.1.1.2 Modelo com variantes selecionadas ----
+  summary(ctx_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_ctx_sev, family = "binomial"))
+  
+  hnp::hnp(ctx_abs_or_pres_binom_mult, resid.type = "deviance")
+}else{
+  print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo CTX")
+}
+
+### 3.1.3 - Ulcerações ----
+#### 3.1.3.1 - Variantes selecionadas pela cliente (MA, MD, MR) ----
+ctx_ulc <- fct_mod_var_ctx_ulc()
+
+## Agroup = 1 -> Ulcerações
+agroup = 1
+
+## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
+if(!is.null(ctx_ulc)){
+  df_ctx_ulc <- fct_mod_var_out_df(df_ctx, ctx_ulc, agroup, p_value)
+  #### 3.1.1.2 Modelo com variantes selecionadas ----
+  print(summary(ctx_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_ctx_ulc, family = "binomial")))
+  
+  hnp::hnp(ctx_abs_or_pres_binom_mult, resid.type = "deviance")
+}else{
+  print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento ulcerações, protocolo CTX")
+}
+## 3.2 - DOXO ----
+
+### 3.2.1 - Presença ou ausência ----
+#### 3.2.1.1 - Variantes selecionadas pela cliente (MA, MD, MR) ----
+doxo_pres_aus <- fct_mod_var_doxo_pres()
+
+## Agroup = 0 -> Presença ausência
+agroup = 0
+
+## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
+if(!is.null(doxo_pres_aus)){
+  df_doxo_pres_aus <- fct_mod_var_out_df(df_doxo, doxo_pres_aus, agroup, p_value)
+  #### 3.2.1.2 Modelo com variantes selecionadas ----
+  print(summary(doxo_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_doxo_pres_aus, family = "binomial")))
+  
+  hnp::hnp(doxo_abs_or_pres_binom_mult, resid.type = "deviance")
+}else{
+  print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo DOXO")
+}
+
+### 3.2.2 - Severidade ----
+#### 3.2.2.1 - Variantes selecionadas pela cliente (MA, MD, MR) ----
+doxo_sev <- fct_mod_var_doxo_sev()
+
+## Agroup = 2 -> Severidade
+agroup = 2
+
+## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
+if(!is.null(doxo_sev)){
+  df_doxo_sev <- fct_mod_var_out_df(df_doxo, doxo_sev, agroup, p_value)
+  #### 3.2.1.2 Modelo com variantes selecionadas ----
+  summary(doxo_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_doxo_sev, family = "binomial"))
+  
+  hnp::hnp(doxo_abs_or_pres_binom_mult, resid.type = "deviance")
+}else{
+  print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo DOXO")
+}
+
+### 3.2.3 - Ulcerações ----
+#### 3.2.3.1 - Variantes selecionadas pela cliente (MA, MD, MR) ----
+doxo_ulc <- fct_mod_var_doxo_ulc()
+
+## Agroup = 1 -> Ulcerações
+agroup = 1
+
+## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
+if(!is.null(doxo_ulc)){
+  df_doxo_ulc <- fct_mod_var_out_df(df_doxo, doxo_ulc, agroup, p_value)
+  #### 3.2.1.2 Modelo com variantes selecionadas ----
+  print(summary(doxo_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_doxo_ulc, family = "binomial")))
+  
+  hnp::hnp(doxo_abs_or_pres_binom_mult, resid.type = "deviance")
+}else{
+  print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento ulcerações, protocolo DOXO")
+}
+
+## 3.3 - MTX ----
+
+### 3.3.1 - Presença ou ausência ----
+#### 3.3.1.1 - Variantes selecionadas pela cliente (MA, MD, MR) ----
+mtx_pres_aus <- fct_mod_var_mtx_pres()
+
+## Agroup = 0 -> Presença ausência
+agroup = 0
+
+## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
+if(!is.null(mtx_pres_aus)){
+  df_mtx_pres_aus <- fct_mod_var_out_df(df_mtx, mtx_pres_aus, agroup, p_value)
+  #### 3.3.1.2 Modelo com variantes selecionadas ----
+  print(summary(mtx_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_mtx_pres_aus, family = "binomial")))
+  
+  hnp::hnp(mtx_abs_or_pres_binom_mult, resid.type = "deviance")
+}else{
+  print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo MTX")
+}
+
+### 3.3.2 - Severidade ----
+#### 3.3.2.1 - Variantes selecionadas pela cliente (MA, MD, MR) ----
+mtx_sev <- fct_mod_var_mtx_sev()
+
+## Agroup = 2 -> Severidade
+agroup = 2
+
+## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
+if(!is.null(mtx_sev)){
+  df_mtx_sev <- fct_mod_var_out_df(df_mtx, mtx_sev, agroup, p_value)
+  #### 3.3.1.2 Modelo com variantes selecionadas ----
+  summary(mtx_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_mtx_sev, family = "binomial"))
+  
+  hnp::hnp(mtx_abs_or_pres_binom_mult, resid.type = "deviance")
+}else{
+  print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo MTX")
+}
+
+### 3.3.3 - Ulcerações ----
+#### 3.3.3.1 - Variantes selecionadas pela cliente (MA, MD, MR) ----
+mtx_ulc <- fct_mod_var_mtx_ulc()
+
+## Agroup = 1 -> Ulcerações
+agroup = 1
+
+## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
+if(!is.null(mtx_ulc)){
+  df_mtx_ulc <- fct_mod_var_out_df(df_mtx, mtx_ulc, agroup, p_value)
+  #### 3.3.1.2 Modelo com variantes selecionadas ----
+  print(summary(mtx_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_mtx_ulc, family = "binomial")))
+  
+  hnp::hnp(mtx_abs_or_pres_binom_mult, resid.type = "deviance")
+}else{
+  print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento ulcerações, protocolo MTX")
+}
+
+## 3.4 - Outros ----
+
+### 3.4.1 - Presença ou ausência ----
+#### 3.4.1.1 - Variantes selecionadas pela cliente (MA, MD, MR) ----
+out_pres_aus <- fct_mod_var_out_pres()
+
+## Agroup = 0 -> Presença ausência
+agroup = 0
+
+## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
+if(!is.null(out_pres_aus)){
+  df_out_pres_aus <- fct_mod_var_out_df(df_out, out_pres_aus, agroup, p_value)
+  #### 3.4.1.2 Modelo com variantes selecionadas ----
+  print(summary(out_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_out_pres_aus, family = "binomial")))
+  
+  hnp::hnp(out_abs_or_pres_binom_mult, resid.type = "deviance")
+}else{
+  print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo Outros")
+}
+
+### 3.4.2 - Severidade ----
+#### 3.4.2.1 - Variantes selecionadas pela cliente (MA, MD, MR) ----
+out_sev <- fct_mod_var_out_sev()
+
+## Agroup = 2 -> Severidade
+agroup = 2
+
+## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
+if(!is.null(out_sev)){
+  df_out_sev <- fct_mod_var_out_df(df_out, out_sev, agroup, p_value)
+  #### 3.4.1.2 Modelo com variantes selecionadas ----
+  summary(out_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_out_sev, family = "binomial"))
+  
+  hnp::hnp(out_abs_or_pres_binom_mult, resid.type = "deviance")
+}else{
+  print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo Outros")
+}
+
+### 3.4.3 - Ulcerações ----
+#### 3.4.3.1 - Variantes selecionadas pela cliente (MA, MD, MR) ----
+out_ulc <- fct_mod_var_out_ulc()
+
+## Agroup = 1 -> Ulcerações
+agroup = 1
+
+## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
+if(!is.null(out_ulc)){
+  df_out_ulc <- fct_mod_var_out_df(df_out, out_ulc, agroup, p_value)
+  #### 3.4.1.2 Modelo com variantes selecionadas ----
+  print(summary(out_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_out_ulc, family = "binomial")))
+  
+  hnp::hnp(out_abs_or_pres_binom_mult, resid.type = "deviance")
+}else{
+  print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento ulcerações, protocolo Outros")
+}
+
 # 1 - MTX altas doses
 # 2 - DOXO predomina
 # 3 - MTX + CTX + DOXO
