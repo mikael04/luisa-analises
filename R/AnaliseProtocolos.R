@@ -183,23 +183,26 @@ if(!is.null(ctx_pres_aus)){
   print(summary(ctx_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_ctx_pres_aus, family = "binomial")))
   
   # hnp::hnp(ctx_abs_or_pres_binom_mult, resid.type = "deviance")
+  
+  ## Não utilizaremos o step, já que as features já foram definidas
+  print(step(ctx_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  # acho que resultaria nisso de qualquer forma.
+  
+  ## Modelo com variantes sugeridas pelo step
+  print(summary(ctx_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ ABCC3_rs11568591_MU + ABCC6_rs9940825_MD + HSP90AA1_rs4947_MA +
+      HSP90AA1_rs8005905_MA + SLC19A1_rs1051266_MR,
+    data = df_ctx_pres_aus, family = "binomial")))
+  
+  ## Modelo apenas com variantes significativas (a partir do modelo step)
+  print(summary(ctx_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ ABCC3_rs11568591_MU + ABCC6_rs9940825_MD + HSP90AA1_rs4947_MA,
+    data = df_ctx_pres_aus, family = "binomial")))
+  
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo CTX")
 }
-# ## Não utilizaremos o step, já que as features já foram definidas
-step(ctx_abs_or_pres_binom_mult) # Poderia criar uma função para remover uma variante por vez, mas
-# acho que resultaria nisso de qualquer forma.
-#
-# ## Modelo com variantes sugeridas pelo step
-summary(ctx_abs_or_pres_binom_mult <- glm(PIORMB ~ HSP90AA1_rs4947_MA + ABCC6_rs9940825_MD +
-                                          HSP90AA1_rs4947_MA + HSP90AA1_rs8005905_MA +
-                                          SLC19A1_rs1051266_MR + ABCC3_rs11568591_MU,
-                                          data = df_ctx_pres_aus, family = "binomial"))
-# 
-# hnp::hnp(ctx_abs_or_pres_binom_mult, resid.type = "deviance")
 
-# Agora, como esperado, a distribuição assumida para os dados é muito melhor (e sem dúvidas certa),
-# visto que nem mesmo uma observação sai dos limites de confiança.
 
 
 ### 3.1.2 - Severidade ----
@@ -215,7 +218,19 @@ if(!is.null(ctx_sev)){
   #### 3.1.1.2 Modelo com variantes selecionadas ----
   summary(ctx_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_ctx_sev, family = "binomial"))
   
-  # hnp::hnp(ctx_abs_or_pres_binom_mult, resid.type = "deviance")
+  ## Não utilizaremos o step, já que as features já foram definidas
+  print(step(ctx_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  # acho que resultaria nisso de qualquer forma.
+  
+  ## Modelo com variantes sugeridas pelo step
+  print(summary(ctx_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ .,
+    data = df_ctx_sev, family = "binomial")))
+  
+  ## Modelo apenas com variantes significativas (a partir do modelo step)
+  print(summary(ctx_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ .,
+    data = df_ctx_sev, family = "binomial")))
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo CTX")
 }
@@ -233,7 +248,20 @@ if(!is.null(ctx_ulc)){
   #### 3.1.1.2 Modelo com variantes selecionadas ----
   print(summary(ctx_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_ctx_ulc, family = "binomial")))
   
-  # hnp::hnp(ctx_abs_or_pres_binom_mult, resid.type = "deviance")
+  ## Não utilizaremos o step, já que as features já foram definidas
+  print(step(ctx_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  # acho que resultaria nisso de qualquer forma.
+  
+  ## Modelo com variantes sugeridas pelo step
+  print(summary(ctx_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ ABCC6_rs12931472_MD + ABCC6_rs72657698_MU +
+      GSTA1_rs1051775_MA + HSP90AA1_rs4947_MA,
+    data = df_ctx_ulc, family = "binomial")))
+  
+  ## Modelo apenas com variantes significativas (a partir do modelo step)
+  print(summary(ctx_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ GSTA1_rs1051775_MA + HSP90AA1_rs4947_MA,
+    data = df_ctx_ulc, family = "binomial")))
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento ulcerações, protocolo CTX")
 }
@@ -252,7 +280,20 @@ if(!is.null(doxo_pres_aus)){
   #### 3.2.1.2 Modelo com variantes selecionadas ----
   print(summary(doxo_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_doxo_pres_aus, family = "binomial")))
   
-  # hnp::hnp(doxo_abs_or_pres_binom_mult, resid.type = "deviance")
+  ## Não utilizaremos o step, já que as features já foram definidas
+  print(step(doxo_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  # acho que resultaria nisso de qualquer forma.
+  
+  ## Modelo com variantes sugeridas pelo step
+  print(summary(doxo_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ ABCC1_rs35587_MD + ABCC3_chr1750683660_MU + 
+      CYP2A7_rs4079366_MD + MTHFR_rs1801133_MR,
+    data = df_doxo_pres_aus, family = "binomial")))
+  
+  ## Modelo apenas com variantes significativas (a partir do modelo step)
+  print(summary(doxo_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ ABCC1_rs35587_MD + CYP2A7_rs4079366_MD + MTHFR_rs1801133_MR,
+    data = df_doxo_pres_aus, family = "binomial")))
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo DOXO")
 }
@@ -270,7 +311,19 @@ if(!is.null(doxo_sev)){
   #### 3.2.1.2 Modelo com variantes selecionadas ----
   summary(doxo_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_doxo_sev, family = "binomial"))
   
-  # hnp::hnp(doxo_abs_or_pres_binom_mult, resid.type = "deviance")
+  ## Não utilizaremos o step, já que as features já foram definidas
+  print(step(doxo_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  # acho que resultaria nisso de qualquer forma.
+  
+  ## Modelo com variantes sugeridas pelo step
+  print(summary(doxo_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ ABCC4_rs1751034_MR + CYP2A7_rs4142867_MD + SLC31A1_chr9113258719_MU,
+    data = df_doxo_sev, family = "binomial")))
+  
+  ## Modelo apenas com variantes significativas (a partir do modelo step)
+  print(summary(doxo_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ ABCC4_rs1751034_MR + CYP2A7_rs4142867_MD + SLC31A1_chr9113258719_MU,
+    data = df_doxo_sev, family = "binomial")))
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo DOXO")
 }
@@ -288,7 +341,20 @@ if(!is.null(doxo_ulc)){
   #### 3.2.1.2 Modelo com variantes selecionadas ----
   print(summary(doxo_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_doxo_ulc, family = "binomial")))
   
-  # hnp::hnp(doxo_abs_or_pres_binom_mult, resid.type = "deviance")
+  ## Não utilizaremos o step, já que as features já foram definidas
+  print(step(doxo_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  # acho que resultaria nisso de qualquer forma.
+  
+  ## Modelo com variantes sugeridas pelo step
+  print(summary(doxo_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ ABCC2_rs2273697_MD + ABCC4_rs2274407_MA + GSTM1_rs1065411_MD + 
+      GSTP1_rs4891_MR,
+    data = df_doxo_ulc, family = "binomial")))
+  
+  ## Modelo apenas com variantes significativas (a partir do modelo step)
+  print(summary(doxo_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ ABCC2_rs2273697_MD + GSTM1_rs1065411_MD + GSTP1_rs4891_MR,
+    data = df_doxo_ulc, family = "binomial")))
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento ulcerações, protocolo DOXO")
 }
@@ -308,7 +374,35 @@ if(!is.null(mtx_pres_aus)){
   #### 3.3.1.2 Modelo com variantes selecionadas ----
   print(summary(mtx_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_mtx_pres_aus, family = "binomial")))
   
-  # hnp::hnp(mtx_abs_or_pres_binom_mult, resid.type = "deviance")
+  ## Não utilizaremos o step, já que as features já foram definidas
+  print(step(mtx_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  # acho que resultaria nisso de qualquer forma.
+  
+  ## Modelo com variantes sugeridas pelo step
+  print(summary(mtx_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ ABCC1_rs35587_MR + ABCC2_rs2273697_MD + 
+      ABCC2_rs3740066_MR + ABCC3_rs1051640_MD + ABCC3_rs2277624_MD + 
+      ABCC4_rs2274405_MA + ABCC4_rs2274406_MA + ABCC6_rs12931472_MA + 
+      CYP2A7_rs4142867_MD + GSTM1_rs1056806_MR + GSTM1_rs147668562_MD + 
+      GSTP1_rs4891_MD + MTHFR_rs4846051_MD + SLC19A1_rs12659_MD + 
+      SLCO6A1_rs10055840_MD + SLCO6A1_rs6884141_MA + TPRA1_chr3127579846_MD + 
+      ABCA3_rs1319979593_MU + ABCA3_rs149532_MU + ABCC2_rs1137968_MU + 
+      ABCC2_rs17222723_MU + ABCC2_rs8187707_MU + ABCC2_rs8187710_MU + 
+      ABCC3_chr1750683660_MU + ABCC3_rs11568591_MU + CCND1_rs1181031465_MU + 
+      CYP2A6_chr1940848742_MU,
+    data = df_mtx_pres_aus, family = "binomial")))
+  
+  ## Modelo apenas com variantes significativas (a partir do modelo step)
+  print(summary(mtx_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ ABCC1_rs35587_MR + ABCC2_rs2273697_MD + 
+      ABCC2_rs3740066_MR + ABCC3_rs1051640_MD + ABCC3_rs2277624_MD + 
+      ABCC4_rs2274405_MA + ABCC4_rs2274406_MA + ABCC6_rs12931472_MA + 
+      CYP2A7_rs4142867_MD + GSTM1_rs1056806_MR + GSTM1_rs147668562_MD + 
+      GSTP1_rs4891_MD + SLC19A1_rs12659_MD + 
+      SLCO6A1_rs10055840_MD + SLCO6A1_rs6884141_MA + TPRA1_chr3127579846_MD + 
+      ABCA3_rs1319979593_MU + ABCA3_rs149532_MU
+      ,
+    data = df_mtx_pres_aus, family = "binomial")))
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo MTX")
 }
@@ -326,7 +420,19 @@ if(!is.null(mtx_sev)){
   #### 3.3.1.2 Modelo com variantes selecionadas ----
   summary(mtx_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_mtx_sev, family = "binomial"))
   
-  # hnp::hnp(mtx_abs_or_pres_binom_mult, resid.type = "deviance")
+  ## Não utilizaremos o step, já que as features já foram definidas
+  print(step(mtx_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  # acho que resultaria nisso de qualquer forma.
+  
+  ## Modelo com variantes sugeridas pelo step
+  print(summary(mtx_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ .,
+    data = df_mtx_sev, family = "binomial")))
+  
+  ## Modelo apenas com variantes significativas (a partir do modelo step)
+  print(summary(mtx_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ .,
+    data = df_mtx_sev, family = "binomial")))
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo MTX")
 }
@@ -344,7 +450,20 @@ if(!is.null(mtx_ulc)){
   #### 3.3.1.2 Modelo com variantes selecionadas ----
   print(summary(mtx_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_mtx_ulc, family = "binomial")))
   
-  # hnp::hnp(mtx_abs_or_pres_binom_mult, resid.type = "deviance")
+  ## Não utilizaremos o step, já que as features já foram definidas
+  print(step(mtx_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  # acho que resultaria nisso de qualquer forma.
+  
+  ## Modelo com variantes sugeridas pelo step
+  print(summary(mtx_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ ABCC2_rs2273697_MD + GSTM1_rs1056806_MR + 
+      SLCO6A1_rs6884141_MR + ABCC2_rs1137968_MU,
+    data = df_mtx_ulc, family = "binomial")))
+  
+  ## Modelo apenas com variantes significativas (a partir do modelo step)
+  print(summary(mtx_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ SLCO6A1_rs6884141_MR,
+    data = df_mtx_ulc, family = "binomial")))
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento ulcerações, protocolo MTX")
 }
@@ -364,7 +483,21 @@ if(!is.null(out_pres_aus)){
   #### 3.4.1.2 Modelo com variantes selecionadas ----
   print(summary(out_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_out_pres_aus, family = "binomial")))
   
-  # hnp::hnp(out_abs_or_pres_binom_mult, resid.type = "deviance")
+  ## Não utilizaremos o step, já que as features já foram definidas
+  print(step(out_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  # acho que resultaria nisso de qualquer forma.
+  
+  ## Modelo com variantes sugeridas pelo step
+  print(summary(out_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ ABCB1_rs1128503_MR + ABCC3_rs1051640_MA + ABCC4_rs2274407_MD + 
+      ABCC6_rs2238472_MD + SLCO6A1_rs10055840_MR + ABCA3_rs1319979593_MU,
+    data = df_out_pres_aus, family = "binomial")))
+  
+  ## Modelo apenas com variantes significativas (a partir do modelo step)
+  print(summary(out_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ ABCB1_rs1128503_MR + ABCC3_rs1051640_MA + ABCC4_rs2274407_MD + 
+      ABCA3_rs1319979593_MU,
+    data = df_out_pres_aus, family = "binomial")))
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo Outros")
 }
@@ -382,7 +515,19 @@ if(!is.null(out_sev)){
   #### 3.4.1.2 Modelo com variantes selecionadas ----
   summary(out_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_out_sev, family = "binomial"))
   
-  # hnp::hnp(out_abs_or_pres_binom_mult, resid.type = "deviance")
+  ## Não utilizaremos o step, já que as features já foram definidas
+  print(step(out_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  # acho que resultaria nisso de qualquer forma.
+  
+  ## Modelo com variantes sugeridas pelo step
+  print(summary(out_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ CYP2A7_rs117539170_MA + GSTM1_rs1065411_MR + MTHFR_rs2066470_MU,
+    data = df_out_sev, family = "binomial")))
+  
+  ## Modelo apenas com variantes significativas (a partir do modelo step)
+  print(summary(out_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ GSTM1_rs1065411_MR + MTHFR_rs2066470_MU,
+    data = df_out_sev, family = "binomial")))
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo Outros")
 }
@@ -400,7 +545,19 @@ if(!is.null(out_ulc)){
   #### 3.4.1.2 Modelo com variantes selecionadas ----
   print(summary(out_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_out_ulc, family = "binomial")))
   
-  # hnp::hnp(out_abs_or_pres_binom_mult, resid.type = "deviance")
+  ## Não utilizaremos o step, já que as features já foram definidas
+  print(step(out_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  # acho que resultaria nisso de qualquer forma.
+  
+  ## Modelo com variantes sugeridas pelo step
+  print(summary(out_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ CYP2A7_rs117539170_MA + GSTM1_rs1065411_MR + MTHFR_rs2066470_MU,
+    data = df_out_sev, family = "binomial")))
+  
+  ## Modelo apenas com variantes significativas (a partir do modelo step)
+  print(summary(out_abs_or_pres_binom_mult <- glm(
+    PIORMB ~ GSTM1_rs1065411_MR + MTHFR_rs2066470_MU,
+    data = df_out_sev, family = "binomial")))
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento ulcerações, protocolo Outros")
 }
