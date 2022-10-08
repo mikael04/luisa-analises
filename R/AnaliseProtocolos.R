@@ -9,6 +9,7 @@
 library(dplyr)
 source("R/fct_aux/func_qui2_fisher.R")
 source("R/fct_aux/func_model_variant_selection.R")
+source("R/fct_aux/func_print_glm_xlsx.R")
 
 
 ## 0.1 Parâmetros globais ----
@@ -220,24 +221,24 @@ agroup = 2
 if(!is.null(ctx_sev)){
   df_ctx_sev <- fct_mod_var_out_df(df_ctx, ctx_sev, agroup, p_value)
   #### 3.1.1.2 Modelo com variantes selecionadas ----
-  summary(ctx_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_ctx_sev, family = "binomial"))
+  summary(ctx_sev_binom_mult <- glm(PIORMB ~ ., data = df_ctx_sev, family = "binomial"))
   
   ## Não utilizaremos o step, já que as features já foram definidas
-  print(step(ctx_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  print(step(ctx_sev_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
   # acho que resultaria nisso de qualquer forma.
   
   ## Modelo com variantes sugeridas pelo step
-  print(summary(ctx_abs_or_pres_binom_mult <- glm(
+  print(summary(ctx_sev_binom_mult <- glm(
     PIORMB ~ .,
     data = df_ctx_sev, family = "binomial")))
   
   ## Modelo apenas com variantes significativas (a partir do modelo step)
-  print(summary(ctx_abs_or_pres_binom_mult <- glm(
+  print(summary(ctx_sev_binom_mult <- glm(
     PIORMB ~ .,
     data = df_ctx_sev, family = "binomial")))
   
   if(switch_write_table){
-    fct_print_glm_xlsx(ctx_abs_or_pres_binom_mult, switch_write_table)
+    fct_print_glm_xlsx(ctx_sev_binom_mult, switch_write_table)
   }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo CTX")
@@ -254,25 +255,25 @@ agroup = 1
 if(!is.null(ctx_ulc)){
   df_ctx_ulc <- fct_mod_var_out_df(df_ctx, ctx_ulc, agroup, p_value)
   #### 3.1.1.2 Modelo com variantes selecionadas ----
-  print(summary(ctx_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_ctx_ulc, family = "binomial")))
+  print(summary(ctx_ulc_binom_mult <- glm(PIORMB ~ ., data = df_ctx_ulc, family = "binomial")))
   
   ## Não utilizaremos o step, já que as features já foram definidas
-  print(step(ctx_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  print(step(ctx_ulc_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
   # acho que resultaria nisso de qualquer forma.
   
   ## Modelo com variantes sugeridas pelo step
-  print(summary(ctx_abs_or_pres_binom_mult <- glm(
+  print(summary(ctx_ulc_binom_mult <- glm(
     PIORMB ~ ABCC6_rs12931472_MD + ABCC6_rs72657698_MU +
       GSTA1_rs1051775_MA + HSP90AA1_rs4947_MA,
     data = df_ctx_ulc, family = "binomial")))
   
   ## Modelo apenas com variantes significativas (a partir do modelo step)
-  print(summary(ctx_abs_or_pres_binom_mult <- glm(
+  print(summary(ctx_ulc_binom_mult <- glm(
     PIORMB ~ GSTA1_rs1051775_MA + HSP90AA1_rs4947_MA,
     data = df_ctx_ulc, family = "binomial")))
   
   if(switch_write_table){
-    fct_print_glm_xlsx(ctx_abs_or_pres_binom_mult, switch_write_table)
+    fct_print_glm_xlsx(ctx_ulc_binom_mult, switch_write_table)
   }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento ulcerações, protocolo CTX")
@@ -325,24 +326,24 @@ agroup = 2
 if(!is.null(doxo_sev)){
   df_doxo_sev <- fct_mod_var_out_df(df_doxo, doxo_sev, agroup, p_value)
   #### 3.2.1.2 Modelo com variantes selecionadas ----
-  summary(doxo_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_doxo_sev, family = "binomial"))
+  summary(doxo_sev_binom_mult <- glm(PIORMB ~ ., data = df_doxo_sev, family = "binomial"))
   
   ## Não utilizaremos o step, já que as features já foram definidas
-  print(step(doxo_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  print(step(doxo_sev_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
   # acho que resultaria nisso de qualquer forma.
   
   ## Modelo com variantes sugeridas pelo step
-  print(summary(doxo_abs_or_pres_binom_mult <- glm(
+  print(summary(doxo_sev_binom_mult <- glm(
     PIORMB ~ ABCC4_rs1751034_MR + CYP2A7_rs4142867_MD + SLC31A1_chr9113258719_MU,
     data = df_doxo_sev, family = "binomial")))
   
   ## Modelo apenas com variantes significativas (a partir do modelo step)
-  print(summary(doxo_abs_or_pres_binom_mult <- glm(
+  print(summary(doxo_sev_binom_mult <- glm(
     PIORMB ~ ABCC4_rs1751034_MR + CYP2A7_rs4142867_MD + SLC31A1_chr9113258719_MU,
     data = df_doxo_sev, family = "binomial")))
   
   if(switch_write_table){
-    fct_print_glm_xlsx(doxo_abs_or_pres_binom_mult, switch_write_table)
+    fct_print_glm_xlsx(doxo_sev_binom_mult, switch_write_table)
   }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo DOXO")
@@ -359,25 +360,25 @@ agroup = 1
 if(!is.null(doxo_ulc)){
   df_doxo_ulc <- fct_mod_var_out_df(df_doxo, doxo_ulc, agroup, p_value)
   #### 3.2.1.2 Modelo com variantes selecionadas ----
-  print(summary(doxo_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_doxo_ulc, family = "binomial")))
+  print(summary(doxo_ulc_binom_mult <- glm(PIORMB ~ ., data = df_doxo_ulc, family = "binomial")))
   
   ## Não utilizaremos o step, já que as features já foram definidas
-  print(step(doxo_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  print(step(doxo_ulc_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
   # acho que resultaria nisso de qualquer forma.
   
   ## Modelo com variantes sugeridas pelo step
-  print(summary(doxo_abs_or_pres_binom_mult <- glm(
+  print(summary(doxo_ulc_binom_mult <- glm(
     PIORMB ~ ABCC2_rs2273697_MD + ABCC4_rs2274407_MA + GSTM1_rs1065411_MD + 
       GSTP1_rs4891_MR,
     data = df_doxo_ulc, family = "binomial")))
   
   ## Modelo apenas com variantes significativas (a partir do modelo step)
-  print(summary(doxo_abs_or_pres_binom_mult <- glm(
+  print(summary(doxo_ulc_binom_mult <- glm(
     PIORMB ~ ABCC2_rs2273697_MD + GSTM1_rs1065411_MD + GSTP1_rs4891_MR,
     data = df_doxo_ulc, family = "binomial")))
   
   if(switch_write_table){
-    fct_print_glm_xlsx(doxo_abs_or_pres_binom_mult, switch_write_table)
+    fct_print_glm_xlsx(doxo_sev_binom_mult, switch_write_table)
   }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento ulcerações, protocolo DOXO")
@@ -446,24 +447,24 @@ agroup = 2
 if(!is.null(mtx_sev)){
   df_mtx_sev <- fct_mod_var_out_df(df_mtx, mtx_sev, agroup, p_value)
   #### 3.3.1.2 Modelo com variantes selecionadas ----
-  summary(mtx_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_mtx_sev, family = "binomial"))
+  summary(mtx_sev_binom_mult <- glm(PIORMB ~ ., data = df_mtx_sev, family = "binomial"))
   
   ## Não utilizaremos o step, já que as features já foram definidas
-  print(step(mtx_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  print(step(mtx_sev_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
   # acho que resultaria nisso de qualquer forma.
   
   ## Modelo com variantes sugeridas pelo step
-  print(summary(mtx_abs_or_pres_binom_mult <- glm(
+  print(summary(mtx_sev_binom_mult <- glm(
     PIORMB ~ .,
     data = df_mtx_sev, family = "binomial")))
   
   ## Modelo apenas com variantes significativas (a partir do modelo step)
-  print(summary(mtx_abs_or_pres_binom_mult <- glm(
+  print(summary(mtx_sev_binom_mult <- glm(
     PIORMB ~ .,
     data = df_mtx_sev, family = "binomial")))
   
   if(switch_write_table){
-    fct_print_glm_xlsx(mtx_abs_or_pres_binom_mult, switch_write_table)
+    fct_print_glm_xlsx(mtx_sev_binom_mult, switch_write_table)
   }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo MTX")
@@ -480,25 +481,25 @@ agroup = 1
 if(!is.null(mtx_ulc)){
   df_mtx_ulc <- fct_mod_var_out_df(df_mtx, mtx_ulc, agroup, p_value)
   #### 3.3.1.2 Modelo com variantes selecionadas ----
-  print(summary(mtx_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_mtx_ulc, family = "binomial")))
+  print(summary(mtx_ulc_binom_mult <- glm(PIORMB ~ ., data = df_mtx_ulc, family = "binomial")))
   
   ## Não utilizaremos o step, já que as features já foram definidas
-  print(step(mtx_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  print(step(mtx_ulc_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
   # acho que resultaria nisso de qualquer forma.
   
   ## Modelo com variantes sugeridas pelo step
-  print(summary(mtx_abs_or_pres_binom_mult <- glm(
+  print(summary(mtx_ulc_binom_mult <- glm(
     PIORMB ~ ABCC2_rs2273697_MD + GSTM1_rs1056806_MR + 
       SLCO6A1_rs6884141_MR + ABCC2_rs1137968_MU,
     data = df_mtx_ulc, family = "binomial")))
   
   ## Modelo apenas com variantes significativas (a partir do modelo step)
-  print(summary(mtx_abs_or_pres_binom_mult <- glm(
+  print(summary(mtx_ulc_binom_mult <- glm(
     PIORMB ~ SLCO6A1_rs6884141_MR,
     data = df_mtx_ulc, family = "binomial")))
   
   if(switch_write_table){
-    fct_print_glm_xlsx(mtx_abs_or_pres_binom_mult, switch_write_table)
+    fct_print_glm_xlsx(mtx_ulc_binom_mult, switch_write_table)
   }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento ulcerações, protocolo MTX")
@@ -553,24 +554,24 @@ agroup = 2
 if(!is.null(out_sev)){
   df_out_sev <- fct_mod_var_out_df(df_out, out_sev, agroup, p_value)
   #### 3.4.1.2 Modelo com variantes selecionadas ----
-  summary(out_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_out_sev, family = "binomial"))
+  summary(out_sev_binom_mult <- glm(PIORMB ~ ., data = df_out_sev, family = "binomial"))
   
   ## Não utilizaremos o step, já que as features já foram definidas
-  print(step(out_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  print(step(out_sev_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
   # acho que resultaria nisso de qualquer forma.
   
   ## Modelo com variantes sugeridas pelo step
-  print(summary(out_abs_or_pres_binom_mult <- glm(
+  print(summary(out_sev_binom_mult <- glm(
     PIORMB ~ CYP2A7_rs117539170_MA + GSTM1_rs1065411_MR + MTHFR_rs2066470_MU,
     data = df_out_sev, family = "binomial")))
   
   ## Modelo apenas com variantes significativas (a partir do modelo step)
-  print(summary(out_abs_or_pres_binom_mult <- glm(
+  print(summary(out_sev_binom_mult <- glm(
     PIORMB ~ GSTM1_rs1065411_MR + MTHFR_rs2066470_MU,
     data = df_out_sev, family = "binomial")))
   
   if(switch_write_table){
-    fct_print_glm_xlsx(out_abs_or_pres_binom_mult, switch_write_table)
+    fct_print_glm_xlsx(out_sev_binom_mult, switch_write_table)
   }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo Outros")
@@ -587,24 +588,24 @@ agroup = 1
 if(!is.null(out_ulc)){
   df_out_ulc <- fct_mod_var_out_df(df_out, out_ulc, agroup, p_value)
   #### 3.4.1.2 Modelo com variantes selecionadas ----
-  print(summary(out_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_out_ulc, family = "binomial")))
+  print(summary(out_ulc_binom_mult <- glm(PIORMB ~ ., data = df_out_ulc, family = "binomial")))
   
   ## Não utilizaremos o step, já que as features já foram definidas
-  print(step(out_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  print(step(out_ulc_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
   # acho que resultaria nisso de qualquer forma.
   
   ## Modelo com variantes sugeridas pelo step
-  print(summary(out_abs_or_pres_binom_mult <- glm(
+  print(summary(out_ulc_binom_mult <- glm(
     PIORMB ~ CYP2A7_rs117539170_MA + GSTM1_rs1065411_MR + MTHFR_rs2066470_MU,
     data = df_out_sev, family = "binomial")))
   
   ## Modelo apenas com variantes significativas (a partir do modelo step)
-  print(summary(out_abs_or_pres_binom_mult <- glm(
+  print(summary(out_ulc_binom_mult <- glm(
     PIORMB ~ GSTM1_rs1065411_MR + MTHFR_rs2066470_MU,
     data = df_out_sev, family = "binomial")))
   
   if(switch_write_table){
-    fct_print_glm_xlsx(out_abs_or_pres_binom_mult, switch_write_table)
+    fct_print_glm_xlsx(out_ulc_binom_mult, switch_write_table)
   }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento ulcerações, protocolo Outros")

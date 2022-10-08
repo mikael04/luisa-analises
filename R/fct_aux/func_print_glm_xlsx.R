@@ -11,13 +11,13 @@
 fct_print_glm_xlsx <- function(model, switch_write_table){
   model_name <- deparse(substitute(model))
   vars <- names(model$qr$qr[2,])
-  estimate <- coef(summary(model))[,"Estimate"]
-  z_value <- coef(summary(model))[,"z value"]
-  p_value <- coef(summary(model))[,"Pr(>|z|)"]
+  estimate <- round(coef(summary(model))[,"Estimate"], 4)
+  z_value <- round(coef(summary(model))[,"z value"], 4)
+  p_value <- round(coef(summary(model))[,"Pr(>|z|)"], 4)
   
   tabela <- data.frame(vars, estimate, z_value, p_value)
   
   if(switch_write_table){
-    openxlsx::write.xlsx(tabela, paste0("data-raw/tabela-reg-bin/resultado_", model_name, ".xlsx"))
+    writexl::write_xlsx(tabela, paste0("data-raw/tabela-reg-bin/resultado_", model_name, ".xlsx"))
   }
 }
