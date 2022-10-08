@@ -20,7 +20,7 @@ use_MC <- T
 
 options(dplyr.summarise.inform = FALSE)
 switch_teste <- F
-switch_write_table <- F
+switch_write_table <- T
 switch_write_binom <- F
 switch_overwrite_binom <- F
 
@@ -199,6 +199,10 @@ if(!is.null(ctx_pres_aus)){
     PIORMB ~ ABCC3_rs11568591_MU + ABCC6_rs9940825_MD + HSP90AA1_rs4947_MA,
     data = df_ctx_pres_aus, family = "binomial")))
   
+  if(switch_write_table){
+    fct_print_glm_xlsx(ctx_abs_or_pres_binom_mult, switch_write_table)
+  }
+    
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo CTX")
 }
@@ -231,6 +235,10 @@ if(!is.null(ctx_sev)){
   print(summary(ctx_abs_or_pres_binom_mult <- glm(
     PIORMB ~ .,
     data = df_ctx_sev, family = "binomial")))
+  
+  if(switch_write_table){
+    fct_print_glm_xlsx(ctx_abs_or_pres_binom_mult, switch_write_table)
+  }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo CTX")
 }
@@ -262,6 +270,10 @@ if(!is.null(ctx_ulc)){
   print(summary(ctx_abs_or_pres_binom_mult <- glm(
     PIORMB ~ GSTA1_rs1051775_MA + HSP90AA1_rs4947_MA,
     data = df_ctx_ulc, family = "binomial")))
+  
+  if(switch_write_table){
+    fct_print_glm_xlsx(ctx_abs_or_pres_binom_mult, switch_write_table)
+  }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento ulcerações, protocolo CTX")
 }
@@ -294,6 +306,10 @@ if(!is.null(doxo_pres_aus)){
   print(summary(doxo_abs_or_pres_binom_mult <- glm(
     PIORMB ~ ABCC1_rs35587_MD + CYP2A7_rs4079366_MD + MTHFR_rs1801133_MR,
     data = df_doxo_pres_aus, family = "binomial")))
+  
+  if(switch_write_table){
+    fct_print_glm_xlsx(doxo_abs_or_pres_binom_mult, switch_write_table)
+  }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo DOXO")
 }
@@ -324,6 +340,10 @@ if(!is.null(doxo_sev)){
   print(summary(doxo_abs_or_pres_binom_mult <- glm(
     PIORMB ~ ABCC4_rs1751034_MR + CYP2A7_rs4142867_MD + SLC31A1_chr9113258719_MU,
     data = df_doxo_sev, family = "binomial")))
+  
+  if(switch_write_table){
+    fct_print_glm_xlsx(doxo_abs_or_pres_binom_mult, switch_write_table)
+  }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo DOXO")
 }
@@ -355,6 +375,10 @@ if(!is.null(doxo_ulc)){
   print(summary(doxo_abs_or_pres_binom_mult <- glm(
     PIORMB ~ ABCC2_rs2273697_MD + GSTM1_rs1065411_MD + GSTP1_rs4891_MR,
     data = df_doxo_ulc, family = "binomial")))
+  
+  if(switch_write_table){
+    fct_print_glm_xlsx(doxo_abs_or_pres_binom_mult, switch_write_table)
+  }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento ulcerações, protocolo DOXO")
 }
@@ -403,6 +427,10 @@ if(!is.null(mtx_pres_aus)){
       ABCA3_rs1319979593_MU + ABCA3_rs149532_MU
       ,
     data = df_mtx_pres_aus, family = "binomial")))
+  
+  if(switch_write_table){
+    fct_print_glm_xlsx(mtx_abs_or_pres_binom_mult, switch_write_table)
+  }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo MTX")
 }
@@ -433,6 +461,10 @@ if(!is.null(mtx_sev)){
   print(summary(mtx_abs_or_pres_binom_mult <- glm(
     PIORMB ~ .,
     data = df_mtx_sev, family = "binomial")))
+  
+  if(switch_write_table){
+    fct_print_glm_xlsx(mtx_abs_or_pres_binom_mult, switch_write_table)
+  }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo MTX")
 }
@@ -464,6 +496,10 @@ if(!is.null(mtx_ulc)){
   print(summary(mtx_abs_or_pres_binom_mult <- glm(
     PIORMB ~ SLCO6A1_rs6884141_MR,
     data = df_mtx_ulc, family = "binomial")))
+  
+  if(switch_write_table){
+    fct_print_glm_xlsx(mtx_abs_or_pres_binom_mult, switch_write_table)
+  }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento ulcerações, protocolo MTX")
 }
@@ -498,6 +534,10 @@ if(!is.null(out_pres_aus)){
     PIORMB ~ ABCB1_rs1128503_MR + ABCC3_rs1051640_MA + ABCC4_rs2274407_MD + 
       ABCA3_rs1319979593_MU,
     data = df_out_pres_aus, family = "binomial")))
+  
+  if(switch_write_table){
+    fct_print_glm_xlsx(out_abs_or_pres_binom_mult, switch_write_table)
+  }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo Outros")
 }
@@ -528,6 +568,10 @@ if(!is.null(out_sev)){
   print(summary(out_abs_or_pres_binom_mult <- glm(
     PIORMB ~ GSTM1_rs1065411_MR + MTHFR_rs2066470_MU,
     data = df_out_sev, family = "binomial")))
+  
+  if(switch_write_table){
+    fct_print_glm_xlsx(out_abs_or_pres_binom_mult, switch_write_table)
+  }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo Outros")
 }
@@ -558,6 +602,10 @@ if(!is.null(out_ulc)){
   print(summary(out_abs_or_pres_binom_mult <- glm(
     PIORMB ~ GSTM1_rs1065411_MR + MTHFR_rs2066470_MU,
     data = df_out_sev, family = "binomial")))
+  
+  if(switch_write_table){
+    fct_print_glm_xlsx(out_abs_or_pres_binom_mult, switch_write_table)
+  }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento ulcerações, protocolo Outros")
 }
