@@ -208,8 +208,6 @@ if(!is.null(ctx_pres_aus)){
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo CTX")
 }
 
-
-
 ### 3.1.2 - Severidade ----
 #### 3.1.2.1 - Variantes selecionadas pela cliente (MA, MD, MR) ----
 ctx_sev <- fct_mod_var_ctx_sev()
@@ -610,6 +608,14 @@ if(!is.null(out_ulc)){
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento ulcerações, protocolo Outros")
 }
+
+# 4. Criando tabelas com análise da regressão binomial múltipla ----
+## 4.1 - CTX ----
+
+### 4.1.1 - Presença ou ausência ----
+#### 4.1.1.1 - Variantes selecionadas pela cliente (MA, MD, MR) ----
+ctx_pres_aus <- fct_mod_var_ctx_pres()
+df_
 
 # 1 - MTX altas doses
 # 2 - DOXO predomina
