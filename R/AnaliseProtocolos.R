@@ -10,6 +10,7 @@ library(dplyr)
 source("R/fct_aux/func_qui2_fisher.R")
 source("R/fct_aux/func_model_variant_selection.R")
 source("R/fct_aux/func_print_glm_xlsx.R")
+source("R/fct_aux/func_res_bin_mult.R")
 
 
 ## 0.1 Parâmetros globais ----
@@ -196,12 +197,20 @@ if(!is.null(ctx_pres_aus)){
     data = df_ctx_pres_aus, family = "binomial")))
   
   ## Modelo apenas com variantes significativas (a partir do modelo step)
-  print(summary(ctx_abs_or_pres_binom_mult <- glm(
+  model <- summary(ctx_abs_or_pres_binom_mult <- glm(
     PIORMB ~ ABCC3_rs11568591_MU + ABCC6_rs9940825_MD + HSP90AA1_rs4947_MA,
-    data = df_ctx_pres_aus, family = "binomial")))
+    data = df_ctx_pres_aus, family = "binomial"))
+  print(model)
   
   if(switch_write_table){
     fct_print_glm_xlsx(ctx_abs_or_pres_binom_mult, switch_write_table)
+    
+    ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
+    vars <- names(ctx_abs_or_pres_binom_mult$qr$qr[2,])
+    p_value <- round(coef(summary(ctx_abs_or_pres_binom_mult))[,"Pr(>|z|)"], 4)
+    
+    fct_res_bin_mult(df_ctx, vars, p_value, "ctx_abs_or_pres_binom_mult", 
+                     switch_write_table = T)
   }
     
 }else{
@@ -237,6 +246,13 @@ if(!is.null(ctx_sev)){
   
   if(switch_write_table){
     fct_print_glm_xlsx(ctx_sev_binom_mult, switch_write_table)
+    
+    ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
+    vars <- names(ctx_sev_binom_mult$qr$qr[2,])
+    p_value <- round(coef(summary(ctx_sev_binom_mult))[,"Pr(>|z|)"], 4)
+    
+    fct_res_bin_mult(df_ctx, vars, p_value, "ctx_sev_binom_mult", 
+                     switch_write_table = T)
   }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo CTX")
@@ -272,6 +288,13 @@ if(!is.null(ctx_ulc)){
   
   if(switch_write_table){
     fct_print_glm_xlsx(ctx_ulc_binom_mult, switch_write_table)
+    
+    ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
+    vars <- names(ctx_ulc_binom_mult$qr$qr[2,])
+    p_value <- round(coef(summary(ctx_ulc_binom_mult))[,"Pr(>|z|)"], 4)
+    
+    fct_res_bin_mult(df_ctx, vars, p_value, "ctx_sev_binom_mult", 
+                     switch_write_table = T)
   }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento ulcerações, protocolo CTX")
@@ -308,6 +331,13 @@ if(!is.null(doxo_pres_aus)){
   
   if(switch_write_table){
     fct_print_glm_xlsx(doxo_abs_or_pres_binom_mult, switch_write_table)
+    
+    ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
+    vars <- names(doxo_abs_or_pres_binom_mult$qr$qr[2,])
+    p_value <- round(coef(summary(doxo_abs_or_pres_binom_mult))[,"Pr(>|z|)"], 4)
+    
+    fct_res_bin_mult(df_doxo, vars, p_value, "doxo_abs_or_pres_binom_mult", 
+                     switch_write_table = T)
   }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo DOXO")
@@ -342,6 +372,13 @@ if(!is.null(doxo_sev)){
   
   if(switch_write_table){
     fct_print_glm_xlsx(doxo_sev_binom_mult, switch_write_table)
+    
+    ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
+    vars <- names(doxo_sev_binom_mult$qr$qr[2,])
+    p_value <- round(coef(summary(doxo_sev_binom_mult))[,"Pr(>|z|)"], 4)
+    
+    fct_res_bin_mult(df_doxo, vars, p_value, "doxo_sev_binom_mult", 
+                     switch_write_table = T)
   }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo DOXO")
@@ -376,7 +413,14 @@ if(!is.null(doxo_ulc)){
     data = df_doxo_ulc, family = "binomial")))
   
   if(switch_write_table){
-    fct_print_glm_xlsx(doxo_sev_binom_mult, switch_write_table)
+    fct_print_glm_xlsx(doxo_ulc_binom_mult, switch_write_table)
+    
+    ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
+    vars <- names(doxo_ulc_binom_mult$qr$qr[2,])
+    p_value <- round(coef(summary(doxo_ulc_binom_mult))[,"Pr(>|z|)"], 4)
+    
+    fct_res_bin_mult(df_doxo, vars, p_value, "doxo_ulc_binom_mult", 
+                     switch_write_table = T)
   }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento ulcerações, protocolo DOXO")
@@ -429,6 +473,13 @@ if(!is.null(mtx_pres_aus)){
   
   if(switch_write_table){
     fct_print_glm_xlsx(mtx_abs_or_pres_binom_mult, switch_write_table)
+    
+    ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
+    vars <- names(mtx_abs_or_pres_binom_mult$qr$qr[2,])
+    p_value <- round(coef(summary(mtx_abs_or_pres_binom_mult))[,"Pr(>|z|)"], 4)
+    
+    fct_res_bin_mult(df_mtx, vars, p_value, "mtx_abs_or_pres_binom_mult", 
+                     switch_write_table = T)
   }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo MTX")
@@ -463,6 +514,13 @@ if(!is.null(mtx_sev)){
   
   if(switch_write_table){
     fct_print_glm_xlsx(mtx_sev_binom_mult, switch_write_table)
+    
+    ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
+    vars <- names(mtx_sev_binom_mult$qr$qr[2,])
+    p_value <- round(coef(summary(mtx_sev_binom_mult))[,"Pr(>|z|)"], 4)
+    
+    fct_res_bin_mult(df_mtx, vars, p_value, "mtx_sev_binom_mult", 
+                     switch_write_table = T)
   }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo MTX")
@@ -498,6 +556,13 @@ if(!is.null(mtx_ulc)){
   
   if(switch_write_table){
     fct_print_glm_xlsx(mtx_ulc_binom_mult, switch_write_table)
+    
+    ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
+    vars <- names(mtx_ulc_binom_mult$qr$qr[2,])
+    p_value <- round(coef(summary(mtx_ulc_binom_mult))[,"Pr(>|z|)"], 4)
+    
+    fct_res_bin_mult(df_mtx, vars, p_value, "mtx_ulc_binom_mult", 
+                     switch_write_table = T)
   }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento ulcerações, protocolo MTX")
@@ -536,6 +601,13 @@ if(!is.null(out_pres_aus)){
   
   if(switch_write_table){
     fct_print_glm_xlsx(out_abs_or_pres_binom_mult, switch_write_table)
+    
+    ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
+    vars <- names(out_abs_or_pres_binom_mult$qr$qr[2,])
+    p_value <- round(coef(summary(out_abs_or_pres_binom_mult))[,"Pr(>|z|)"], 4)
+    
+    fct_res_bin_mult(df_out, vars, p_value, "out_abs_or_pres_binom_mult", 
+                     switch_write_table = T)
   }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo Outros")
@@ -570,6 +642,13 @@ if(!is.null(out_sev)){
   
   if(switch_write_table){
     fct_print_glm_xlsx(out_sev_binom_mult, switch_write_table)
+    
+    ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
+    vars <- names(out_sev_binom_mult$qr$qr[2,])
+    p_value <- round(coef(summary(out_sev_binom_mult))[,"Pr(>|z|)"], 4)
+    
+    fct_res_bin_mult(df_out, vars, p_value, "out_sev_binom_mult", 
+                     switch_write_table = T)
   }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo Outros")
@@ -604,6 +683,13 @@ if(!is.null(out_ulc)){
   
   if(switch_write_table){
     fct_print_glm_xlsx(out_ulc_binom_mult, switch_write_table)
+    
+    ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
+    vars <- names(out_ulc_binom_mult$qr$qr[2,])
+    p_value <- round(coef(summary(out_ulc_binom_mult))[,"Pr(>|z|)"], 4)
+    
+    fct_res_bin_mult(df_out, vars, p_value, "out_ulc_binom_mult", 
+                     switch_write_table = T)
   }
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento ulcerações, protocolo Outros")
@@ -614,8 +700,7 @@ if(!is.null(out_ulc)){
 
 ### 4.1.1 - Presença ou ausência ----
 #### 4.1.1.1 - Variantes selecionadas pela cliente (MA, MD, MR) ----
-ctx_pres_aus <- fct_mod_var_ctx_pres()
-df_
+
 
 # 1 - MTX altas doses
 # 2 - DOXO predomina
