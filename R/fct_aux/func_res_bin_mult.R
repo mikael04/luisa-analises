@@ -9,7 +9,7 @@
 
 # 0 - Scripts e bibliotecas ----
 
-# 1 - Funções
+# 1 - Funções ----
 ## 1.1 - vars_pvalue ----
 ## Recebe o modelo, separa o nome das variantes em um df com colunas
 ## gene, variante, genótipo, gene_variante_genótipo e p-valor
@@ -36,6 +36,31 @@ fct_vars_pvalue <- function(model, debug){
 
 ## 1.2 -Cria dataframe usado para o join (genótipo e dummie)  ----
 ## Recebe o dataframe separado apenas com variantes selecionadas
+## retorna um df com os genes, variantes e seus diferentes genótipos
+fct_list_var_geno_dummy <- function(df_all_vars, df_vars_pvalue, debug){
+  teste_interno <- F
+  if(teste_interno){
+    debug <- F
+  }
+  vars <- unique(df_vars_pvalue$gene_variant_model)
+  list_dfs <- NULL
+  for(i in 1:length(vars)){
+    var <- gsub(pattern = '.{1}$', "", vars[i])
+    df_aux <- df_all_vars |> 
+      dplyr::select(dplyr::contains(var)) |> 
+      dplyr::distinct()
+    
+    df_aux_t <- as.data.frame(t(df_aux), stringsAsFactors = F) |> 
+      tibble::rownames_to_column("gene_variant_model") |> 
+      dplyr::select(gene_variant_model)
+    ## i <- 3 problemático porque temos mais de dois níveis, lidar com ele
+    df_aux <- cbind(df_aux_t, df_aux)
+    list_dfs[[i]] <- df_aux
+    
+  }
+  # df_1 <- list_dfs[[1]]
+}
+
 
 ## 1.3 - Resultado da binomial múltipla ----
 ## Vai receber o df do protocolo selecionado, o modelo e o nome do modelo
@@ -63,7 +88,7 @@ fct_res_bin_mult <- function(df, model, model_name, switch_write_table){
     dplyr::distinct(across(all_of(vars_selected)))
   
   ## Separando dfs por variante
-  num_vars <- length(unique(vars_model))
+  list_dfs_variants <- fct_list_var_geno_dummy(df_all_vars, vars_model, debug = F)
   
   df_teste <- as.data.frame(t(df_all_vars)) |> 
     tibble::rownames_to_column("gene_variant_model")
