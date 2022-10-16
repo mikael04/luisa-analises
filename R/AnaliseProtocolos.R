@@ -197,10 +197,9 @@ if(!is.null(ctx_pres_aus)){
     data = df_ctx_pres_aus, family = "binomial")))
   
   ## Modelo apenas com variantes significativas (a partir do modelo step)
-  model <- summary(ctx_abs_or_pres_binom_mult <- glm(
+  print(summary(ctx_abs_or_pres_binom_mult <- glm(
     PIORMB ~ ABCC3_rs11568591_MU + ABCC6_rs9940825_MD + HSP90AA1_rs4947_MA,
-    data = df_ctx_pres_aus, family = "binomial"))
-  print(model)
+    data = df_ctx_pres_aus, family = "binomial")))
   
   if(switch_write_table){
     fct_print_glm_xlsx(ctx_abs_or_pres_binom_mult, switch_write_table)
@@ -277,8 +276,8 @@ if(!is.null(ctx_ulc)){
   
   ## Modelo com variantes sugeridas pelo step
   print(summary(ctx_ulc_binom_mult <- glm(
-    PIORMB ~ ABCC6_rs12931472_MD + ABCC6_rs72657698_MU +
-      GSTA1_rs1051775_MA + HSP90AA1_rs4947_MA,
+    PIORMB ~ GSTA1_rs1051775_MA + HSP90AA1_rs4947_MA + 
+      SLCO6A1_rs6884141_MR + ABCC3_rs4148416_MU,
     data = df_ctx_ulc, family = "binomial")))
   
   ## Modelo apenas com variantes significativas (a partir do modelo step)
@@ -320,8 +319,7 @@ if(!is.null(doxo_pres_aus)){
   
   ## Modelo com variantes sugeridas pelo step
   print(summary(doxo_abs_or_pres_binom_mult <- glm(
-    PIORMB ~ ABCC1_rs35587_MD + ABCC3_chr1750683660_MU + 
-      CYP2A7_rs4079366_MD + MTHFR_rs1801133_MR,
+    PIORMB ~ ABCC1_rs35587_MD + CYP2A7_rs4079366_MD + MTHFR_rs1801133_MR,
     data = df_doxo_pres_aus, family = "binomial")))
   
   ## Modelo apenas com variantes significativas (a partir do modelo step)
@@ -403,8 +401,8 @@ if(!is.null(doxo_ulc)){
   
   ## Modelo com variantes sugeridas pelo step
   print(summary(doxo_ulc_binom_mult <- glm(
-    PIORMB ~ ABCC2_rs2273697_MD + ABCC4_rs2274407_MA + GSTM1_rs1065411_MD + 
-      GSTP1_rs4891_MR,
+    PIORMB ~ ABCC2_rs2273697_MD + ABCC4_rs2274407_MA + 
+      GSTM1_rs1065411_MD + GSTP1_rs4891_MR,
     data = df_doxo_ulc, family = "binomial")))
   
   ## Modelo apenas com variantes significativas (a partir do modelo step)
@@ -454,9 +452,7 @@ if(!is.null(mtx_pres_aus)){
       GSTP1_rs4891_MD + MTHFR_rs4846051_MD + SLC19A1_rs12659_MD + 
       SLCO6A1_rs10055840_MD + SLCO6A1_rs6884141_MA + TPRA1_chr3127579846_MD + 
       ABCA3_rs1319979593_MU + ABCA3_rs149532_MU + ABCC2_rs1137968_MU + 
-      ABCC2_rs17222723_MU + ABCC2_rs8187707_MU + ABCC2_rs8187710_MU + 
-      ABCC3_chr1750683660_MU + ABCC3_rs11568591_MU + CCND1_rs1181031465_MU + 
-      CYP2A6_chr1940848742_MU,
+      ABCC2_rs8187707_MU + ABCC2_rs8187710_MU + ABCC3_chr1750683660_MU,
     data = df_mtx_pres_aus, family = "binomial")))
   
   ## Modelo apenas com variantes significativas (a partir do modelo step)
@@ -467,8 +463,7 @@ if(!is.null(mtx_pres_aus)){
       CYP2A7_rs4142867_MD + GSTM1_rs1056806_MR + GSTM1_rs147668562_MD + 
       GSTP1_rs4891_MD + SLC19A1_rs12659_MD + 
       SLCO6A1_rs10055840_MD + SLCO6A1_rs6884141_MA + TPRA1_chr3127579846_MD + 
-      ABCA3_rs1319979593_MU + ABCA3_rs149532_MU
-      ,
+      ABCA3_rs1319979593_MU + ABCA3_rs149532_MU,
     data = df_mtx_pres_aus, family = "binomial")))
   
   if(switch_write_table){
@@ -545,13 +540,13 @@ if(!is.null(mtx_ulc)){
   
   ## Modelo com variantes sugeridas pelo step
   print(summary(mtx_ulc_binom_mult <- glm(
-    PIORMB ~ ABCC2_rs2273697_MD + GSTM1_rs1056806_MR + 
-      SLCO6A1_rs6884141_MR + ABCC2_rs1137968_MU,
+    PIORMB ~ ABCC2_rs2273697_MD + ABCC3_rs1051640_MD + 
+      GSTM1_rs1056806_MR + SLCO6A1_rs6884141_MR,
     data = df_mtx_ulc, family = "binomial")))
   
   ## Modelo apenas com variantes significativas (a partir do modelo step)
   print(summary(mtx_ulc_binom_mult <- glm(
-    PIORMB ~ SLCO6A1_rs6884141_MR,
+    PIORMB ~ ABCC3_rs1051640_MD + SLCO6A1_rs6884141_MR,
     data = df_mtx_ulc, family = "binomial")))
   
   if(switch_write_table){
@@ -589,14 +584,14 @@ if(!is.null(out_pres_aus)){
   
   ## Modelo com variantes sugeridas pelo step
   print(summary(out_abs_or_pres_binom_mult <- glm(
-    PIORMB ~ ABCB1_rs1128503_MR + ABCC3_rs1051640_MA + ABCC4_rs2274407_MD + 
-      ABCC6_rs2238472_MD + SLCO6A1_rs10055840_MR + ABCA3_rs1319979593_MU,
+    PIORMB ~ ABCB1_rs1128503_MR + ABCC3_rs1051640_MA + 
+      ABCC4_rs2274407_MD + ABCC6_rs2238472_MD + SLCO6A1_rs10055840_MR,
     data = df_out_pres_aus, family = "binomial")))
   
   ## Modelo apenas com variantes significativas (a partir do modelo step)
   print(summary(out_abs_or_pres_binom_mult <- glm(
-    PIORMB ~ ABCB1_rs1128503_MR + ABCC3_rs1051640_MA + ABCC4_rs2274407_MD + 
-      ABCA3_rs1319979593_MU,
+    PIORMB ~ ABCB1_rs1128503_MR + ABCC3_rs1051640_MA + 
+      ABCC4_rs2274407_MD + ABCC6_rs2238472_MD + SLCO6A1_rs10055840_MR,
     data = df_out_pres_aus, family = "binomial")))
   
   if(switch_write_table){
@@ -673,13 +668,14 @@ if(!is.null(out_ulc)){
   
   ## Modelo com variantes sugeridas pelo step
   print(summary(out_ulc_binom_mult <- glm(
-    PIORMB ~ CYP2A7_rs117539170_MA + GSTM1_rs1065411_MR + MTHFR_rs2066470_MU,
-    data = df_out_sev, family = "binomial")))
+    PIORMB ~ ABCB1_rs1128503_MA + GSTA1_rs1051775_MD + 
+      GSTP1_rs1695_MA + ABCA3_rs1319979593_MU + ABCC6_rs72657698_MU,
+    data = df_out_ulc, family = "binomial")))
   
   ## Modelo apenas com variantes significativas (a partir do modelo step)
   print(summary(out_ulc_binom_mult <- glm(
-    PIORMB ~ GSTM1_rs1065411_MR + MTHFR_rs2066470_MU,
-    data = df_out_sev, family = "binomial")))
+    PIORMB ~ ABCB1_rs1128503_MA + GSTP1_rs1695_MA + ABCA3_rs1319979593_MU,
+    data = df_out_ulc, family = "binomial")))
   
   if(switch_write_table){
     fct_print_glm_xlsx(out_ulc_binom_mult, switch_write_table)
@@ -694,12 +690,6 @@ if(!is.null(out_ulc)){
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento ulcerações, protocolo Outros")
 }
-
-# 4. Criando tabelas com análise da regressão binomial múltipla ----
-## 4.1 - CTX ----
-
-### 4.1.1 - Presença ou ausência ----
-#### 4.1.1.1 - Variantes selecionadas pela cliente (MA, MD, MR) ----
 
 
 # 1 - MTX altas doses

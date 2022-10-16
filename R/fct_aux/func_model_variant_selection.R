@@ -79,8 +79,8 @@ fct_mod_var_out_pres <- function(){
 fct_mod_var_out_df <- function(df_protocol, vars_selected, agroup, p_value){
   teste_interno <- F
   if(teste_interno){
-    df_protocol <- df_ctx
-    vars_selected <- fct_mod_var_ctx_pres()
+    df_protocol <- df_out
+    vars_selected <- out_ulc
     agroup = 0
     p_value = 0.05
   }
