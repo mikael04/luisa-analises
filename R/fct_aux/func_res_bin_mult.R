@@ -28,9 +28,9 @@ fct_vars_pvalue <- function(vars, p_value, debug){
   # browser()
   
   ## Criando tabela de variante separado por colunas, e com última coluna para futuro join
-  vars_aux <- as.data.frame(stringr::str_split_fixed(vars, "_", n = 3), stringsAsFactors = F) |> 
-    dplyr::rename(Gene = 1, Variant = 2, Model_dum = 3) |> 
-    tidyr::separate(Model_dum, into = c("Model", "dummy"), sep = 2) |> 
+  vars_aux <- as.data.frame(stringr::str_split_fixed(vars, "_", n = 4), stringsAsFactors = F) |> 
+    dplyr::rename(Gene = 1, Variant = 2, Model = 3, dummy = 4) |> 
+    # tidyr::separate(Model_dum, into = c("Model", "dummy"), sep = 2) |> 
     dplyr::mutate(gene_variant_model = paste0(Gene, "_", Variant, "_", Model))
   
   cbind(vars_aux, p_value)
@@ -99,9 +99,8 @@ fct_res_bin_mult <- function(df, vars, p_value, model_name, switch_write_table){
   ## Recebendo tabela \
   # browser()
   
-  
   df_vars_pvalue <- fct_vars_pvalue(vars, p_value, debug = F)
-  `rownames<-`(df_vars_pvalue, NULL)
+  rownames(df_vars_pvalue) <- NULL
   
   ## Separando nomes de coluna, coluna com nome do genótipo e com valor da dummy
   vars_model <- unique(df_vars_pvalue$gene_variant_model)
