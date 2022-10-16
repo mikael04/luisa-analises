@@ -187,7 +187,7 @@ if(!is.null(ctx_pres_aus)){
   # hnp::hnp(ctx_abs_or_pres_binom_mult, resid.type = "deviance")
   
   ## Não utilizaremos o step, já que as features já foram definidas
-  print(step(ctx_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  print(step(summary(ctx_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_ctx_pres_aus, family = "binomial")))) # Poderia criar uma função para remover uma variante por vez, mas
   # acho que resultaria nisso de qualquer forma.
   
   ## Modelo com variantes sugeridas pelo step
@@ -230,7 +230,7 @@ if(!is.null(ctx_sev)){
   summary(ctx_sev_binom_mult <- glm(PIORMB ~ ., data = df_ctx_sev, family = "binomial"))
   
   ## Não utilizaremos o step, já que as features já foram definidas
-  print(step(ctx_sev_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  print(step(summary(ctx_sev_binom_mult <- glm(PIORMB ~ ., data = df_ctx_sev, family = "binomial"))) # Poderia criar uma função para remover uma variante por vez, mas
   # acho que resultaria nisso de qualquer forma.
   
   ## Modelo com variantes sugeridas pelo step
@@ -271,18 +271,18 @@ if(!is.null(ctx_ulc)){
   print(summary(ctx_ulc_binom_mult <- glm(PIORMB ~ ., data = df_ctx_ulc, family = "binomial")))
   
   ## Não utilizaremos o step, já que as features já foram definidas
-  print(step(ctx_ulc_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  print(step(summary(ctx_ulc_binom_mult <- glm(PIORMB ~ ., data = df_ctx_ulc, family = "binomial")))) # Poderia criar uma função para remover uma variante por vez, mas
   # acho que resultaria nisso de qualquer forma.
   
   ## Modelo com variantes sugeridas pelo step
   print(summary(ctx_ulc_binom_mult <- glm(
-    PIORMB ~ GSTA1_rs1051775_MA + HSP90AA1_rs4947_MA + 
-      SLCO6A1_rs6884141_MR + ABCC3_rs4148416_MU,
+    PIORMB ~ GSTA1_rs1051775_MA + HSP90AA1_rs10873531_MA + 
+      CYP2A13_chr1941088640_MU,
     data = df_ctx_ulc, family = "binomial")))
   
   ## Modelo apenas com variantes significativas (a partir do modelo step)
   print(summary(ctx_ulc_binom_mult <- glm(
-    PIORMB ~ GSTA1_rs1051775_MA + HSP90AA1_rs4947_MA,
+    PIORMB ~ HSP90AA1_rs4947_MA,
     data = df_ctx_ulc, family = "binomial")))
   
   if(switch_write_table){
@@ -314,7 +314,7 @@ if(!is.null(doxo_pres_aus)){
   print(summary(doxo_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_doxo_pres_aus, family = "binomial")))
   
   ## Não utilizaremos o step, já que as features já foram definidas
-  print(step(doxo_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  print(step(summary(doxo_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_doxo_pres_aus, family = "binomial")))) # Poderia criar uma função para remover uma variante por vez, mas
   # acho que resultaria nisso de qualquer forma.
   
   ## Modelo com variantes sugeridas pelo step
@@ -355,17 +355,19 @@ if(!is.null(doxo_sev)){
   summary(doxo_sev_binom_mult <- glm(PIORMB ~ ., data = df_doxo_sev, family = "binomial"))
   
   ## Não utilizaremos o step, já que as features já foram definidas
-  print(step(doxo_sev_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  print(step(doxo_sev_binom_mult <- glm(PIORMB ~ ., data = df_doxo_sev, family = "binomial"))) # Poderia criar uma função para remover uma variante por vez, mas
   # acho que resultaria nisso de qualquer forma.
   
   ## Modelo com variantes sugeridas pelo step
   print(summary(doxo_sev_binom_mult <- glm(
-    PIORMB ~ ABCC4_rs1751034_MR + CYP2A7_rs4142867_MD + SLC31A1_chr9113258719_MU,
+    PIORMB ~ ABCC4_rs1751034_MR + CYP2A7_rs4142867_MD + 
+      SLC31A1_chr9113258719_MU,
     data = df_doxo_sev, family = "binomial")))
   
   ## Modelo apenas com variantes significativas (a partir do modelo step)
   print(summary(doxo_sev_binom_mult <- glm(
-    PIORMB ~ ABCC4_rs1751034_MR + CYP2A7_rs4142867_MD + SLC31A1_chr9113258719_MU,
+    PIORMB ~ CYP2A7_rs4142867_MD + CYP2A13_chr1941094421_MU + 
+      CYP2A13_rs147797134_MU + SLC31A1_chr9113258719_MU,
     data = df_doxo_sev, family = "binomial")))
   
   if(switch_write_table){
@@ -396,7 +398,7 @@ if(!is.null(doxo_ulc)){
   print(summary(doxo_ulc_binom_mult <- glm(PIORMB ~ ., data = df_doxo_ulc, family = "binomial")))
   
   ## Não utilizaremos o step, já que as features já foram definidas
-  print(step(doxo_ulc_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  print(step(summary(doxo_ulc_binom_mult <- glm(PIORMB ~ ., data = df_doxo_ulc, family = "binomial")))) # Poderia criar uma função para remover uma variante por vez, mas
   # acho que resultaria nisso de qualquer forma.
   
   ## Modelo com variantes sugeridas pelo step
@@ -440,7 +442,7 @@ if(!is.null(mtx_pres_aus)){
   print(summary(mtx_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_mtx_pres_aus, family = "binomial")))
   
   ## Não utilizaremos o step, já que as features já foram definidas
-  print(step(mtx_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  print(step(summary(mtx_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_mtx_pres_aus, family = "binomial")))) # Poderia criar uma função para remover uma variante por vez, mas
   # acho que resultaria nisso de qualquer forma.
   
   ## Modelo com variantes sugeridas pelo step
@@ -491,10 +493,10 @@ agroup = 2
 if(!is.null(mtx_sev)){
   df_mtx_sev <- fct_mod_var_out_df(df_mtx, mtx_sev, agroup, p_value)
   #### 3.3.1.2 Modelo com variantes selecionadas ----
-  summary(mtx_sev_binom_mult <- glm(PIORMB ~ ., data = df_mtx_sev, family = "binomial"))
+  print(summary(mtx_sev_binom_mult <- glm(PIORMB ~ ., data = df_mtx_sev, family = "binomial")))
   
   ## Não utilizaremos o step, já que as features já foram definidas
-  print(step(mtx_sev_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  print(step(summary(mtx_sev_binom_mult <- glm(PIORMB ~ ., data = df_mtx_sev, family = "binomial")))) # Poderia criar uma função para remover uma variante por vez, mas
   # acho que resultaria nisso de qualquer forma.
   
   ## Modelo com variantes sugeridas pelo step
@@ -535,7 +537,7 @@ if(!is.null(mtx_ulc)){
   print(summary(mtx_ulc_binom_mult <- glm(PIORMB ~ ., data = df_mtx_ulc, family = "binomial")))
   
   ## Não utilizaremos o step, já que as features já foram definidas
-  print(step(mtx_ulc_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  print(step(summary(mtx_ulc_binom_mult <- glm(PIORMB ~ ., data = df_mtx_ulc, family = "binomial")))) # Poderia criar uma função para remover uma variante por vez, mas
   # acho que resultaria nisso de qualquer forma.
   
   ## Modelo com variantes sugeridas pelo step
@@ -579,7 +581,7 @@ if(!is.null(out_pres_aus)){
   print(summary(out_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_out_pres_aus, family = "binomial")))
   
   ## Não utilizaremos o step, já que as features já foram definidas
-  print(step(out_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  print(step(summary(out_abs_or_pres_binom_mult <- glm(PIORMB ~ ., data = df_out_pres_aus, family = "binomial")))) # Poderia criar uma função para remover uma variante por vez, mas
   # acho que resultaria nisso de qualquer forma.
   
   ## Modelo com variantes sugeridas pelo step
@@ -622,7 +624,7 @@ if(!is.null(out_sev)){
   summary(out_sev_binom_mult <- glm(PIORMB ~ ., data = df_out_sev, family = "binomial"))
   
   ## Não utilizaremos o step, já que as features já foram definidas
-  print(step(out_sev_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  print(step(summary(out_sev_binom_mult <- glm(PIORMB ~ ., data = df_out_sev, family = "binomial")))) # Poderia criar uma função para remover uma variante por vez, mas
   # acho que resultaria nisso de qualquer forma.
   
   ## Modelo com variantes sugeridas pelo step
@@ -663,7 +665,7 @@ if(!is.null(out_ulc)){
   print(summary(out_ulc_binom_mult <- glm(PIORMB ~ ., data = df_out_ulc, family = "binomial")))
   
   ## Não utilizaremos o step, já que as features já foram definidas
-  print(step(out_ulc_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
+  print(step(summary(out_ulc_binom_mult <- glm(PIORMB ~ ., data = df_out_ulc, family = "binomial")))) # Poderia criar uma função para remover uma variante por vez, mas
   # acho que resultaria nisso de qualquer forma.
   
   ## Modelo com variantes sugeridas pelo step
