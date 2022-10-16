@@ -26,7 +26,7 @@ switch_teste <- F
 switch_write_table <- T
 switch_write_binom <- F
 switch_overwrite_binom <- F
-
+switch_test_chi2_protocol <- F
 
 # 1 - Lendo Base de dados ----
 df_full <- haven::read_sav("data-raw/banco lla e linfoma 16.05.sav") |> 
@@ -51,8 +51,8 @@ path_tables <- "data-raw/tabelas_modelos_protocolos/ctx/"
 if(!dir.exists(path_tables)){
   dir.create(path_tables)
 }
-
-tryCatch({
+if(switch_test_chi2_protocol){
+  tryCatch({
     message("Iniciando qui-2 e fisher para protocolo CTX predomina")
     fct_qui2_fisher(df_ctx, path_tables, debug)
   },
@@ -67,7 +67,10 @@ tryCatch({
     message("")
     message("Finalizando execução para protocolo CTX predomina")
   }
-)
+  )
+}else{
+  print("Não vai rodar o teste qui-2 para protocolo CTX")
+}
 
 ## 2.2 - DOXO ----
 ## Teste 1 será rodado para os agrupamentos: 
@@ -85,22 +88,26 @@ if(!dir.exists(path_tables)){
   dir.create(path_tables)
 }
 
-tryCatch({
-    message("Iniciando qui-2 e fisher para protocolo DOXO dominante")
-    fct_qui2_fisher(df_doxo, path_tables, debug)
-  },
-  error=function(cond) {
-    message("Erro ao executar a função")
-    message("Mensagem original:")
-    message(cond)
-    # Choose a return value in case of error
-    return(NA)
-  },
-  finally={
-    message("")
-    message("Finalizando execução para protocolo DOXO dominante")
-  }
-)
+if(switch_test_chi2_protocol){
+  tryCatch({
+      message("Iniciando qui-2 e fisher para protocolo DOXO dominante")
+      fct_qui2_fisher(df_doxo, path_tables, debug)
+    },
+    error=function(cond) {
+      message("Erro ao executar a função")
+      message("Mensagem original:")
+      message(cond)
+      # Choose a return value in case of error
+      return(NA)
+    },
+    finally={
+      message("")
+      message("Finalizando execução para protocolo DOXO dominante")
+    }
+  )
+}else{
+  print("Não vai rodar o teste qui-2 para protocolo DOXO")
+}
 
 ## 2.3 - MTX ----
 ## Teste 3 será rodado para os agrupamentos: 
@@ -118,22 +125,26 @@ if(!dir.exists(path_tables)){
   dir.create(path_tables)
 }
 
-tryCatch({
-    message("Iniciando qui-2 e fisher para protocolo MTX altas doses")
-    fct_qui2_fisher(df_mtx, path_tables, debug)
-  },
-  error=function(cond) {
-    message("Erro ao executar a função")
-    message("Mensagem original:")
-    message(cond)
-    # Choose a return value in case of error
-    return(NA)
-  },
-  finally={
-    message("")
-    message("Finalizando execução para protocolo MTX altas doses")
-  }
-)
+if(switch_test_chi2_protocol){
+  tryCatch({
+      message("Iniciando qui-2 e fisher para protocolo MTX altas doses")
+      fct_qui2_fisher(df_mtx, path_tables, debug)
+    },
+    error=function(cond) {
+      message("Erro ao executar a função")
+      message("Mensagem original:")
+      message(cond)
+      # Choose a return value in case of error
+      return(NA)
+    },
+    finally={
+      message("")
+      message("Finalizando execução para protocolo MTX altas doses")
+    }
+  )
+}else{
+  print("Não vai rodar o teste qui-2 para protocolo MTX")
+}
 
 ## 2.4 - Outros agrupamentos ----
 ## Teste 4 será rodado para os agrupamentos: 
@@ -151,22 +162,26 @@ if(!dir.exists(path_tables)){
   dir.create(path_tables)
 }
 
-tryCatch({
-    message("Iniciando qui-2 e fisher para protocolo outros agrupamentos de protocolos")
-    fct_qui2_fisher(df_out, path_tables, debug)
-  },
-  error=function(cond) {
-    message("Erro ao executar a função")
-    message("Mensagem original:")
-    message(cond)
-    # Choose a return value in case of error
-    return(NA)
-  },
-  finally={
-    message("")
-    message("Finalizando execução para protocolo outros agrupamentos de protocolos")
-  }
-)
+if(switch_test_chi2_protocol){
+  tryCatch({
+      message("Iniciando qui-2 e fisher para protocolo outros agrupamentos de protocolos")
+      fct_qui2_fisher(df_out, path_tables, debug)
+    },
+    error=function(cond) {
+      message("Erro ao executar a função")
+      message("Mensagem original:")
+      message(cond)
+      # Choose a return value in case of error
+      return(NA)
+    },
+    finally={
+      message("")
+      message("Finalizando execução para protocolo outros agrupamentos de protocolos")
+    }
+  )
+}else{
+  print("Não vai rodar o teste qui-2 para protocolo 'outros protocolos'")
+}
 
 # 3. Regressão binomial multivariada ----
 print("Iniciando regressão binomial multivariada")
