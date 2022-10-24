@@ -196,7 +196,7 @@ agroup = 0
 
 ## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
 if(!is.null(ctx_pres_aus)){
-  df_ctx_pres_aus <- fct_mod_var_out_df(df_ctx, ctx_pres_aus, agroup, p_value)
+  df_ctx_pres_aus <- fct_mod_var_out_df(df_ctx, ctx_pres_aus, agroup, p_value = 0.05)
   
   df_ctx_pres_aus_fast_dummies <-  fct_get_dummy_cols(df_ctx_pres_aus, debug)
   #### 3.1.1.2 Modelo com variantes selecionadas ----
@@ -224,10 +224,10 @@ if(!is.null(ctx_pres_aus)){
     fct_print_glm_xlsx(ctx_abs_or_pres_binom_mult, switch_write_table)
     
     ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
-    vars <- gsub(pattern = '.{1}$', "", names(ctx_abs_or_pres_binom_mult$qr$qr[2,]))
-    p_value <- round(coef(summary(ctx_abs_or_pres_binom_mult))[,"Pr(>|z|)"], 4)
+    vars_aux <- gsub(".{1}$", "", names(ctx_abs_or_pres_binom_mult$qr$qr[2,]))
+    p_value_vars <- round(coef(summary(ctx_abs_or_pres_binom_mult))[,"Pr(>|z|)"], 4)
     
-    fct_res_bin_mult(df_ctx, vars, p_value, "ctx_abs_or_pres_binom_mult", 
+    fct_res_bin_mult(df_ctx, vars_aux, p_value_vars, "ctx_abs_or_pres_binom_mult", 
                      switch_write_table = T)
   }
     
@@ -244,7 +244,7 @@ agroup = 2
 
 ## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
 if(!is.null(ctx_sev)){
-  df_ctx_sev <- fct_mod_var_out_df(df_ctx, ctx_sev, agroup, p_value)
+  df_ctx_sev <- fct_mod_var_out_df(df_ctx, ctx_sev, agroup, p_value = 0.05)
   
   df_ctx_sev_fast_dummies <-  fct_get_dummy_cols(df_ctx_sev, debug)
   #### 3.1.1.2 Modelo com variantes selecionadas ----
@@ -268,10 +268,10 @@ if(!is.null(ctx_sev)){
     fct_print_glm_xlsx(ctx_sev_binom_mult, switch_write_table)
     
     ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
-    vars <- names(ctx_sev_binom_mult$qr$qr[2,])
-    p_value <- round(coef(summary(ctx_sev_binom_mult))[,"Pr(>|z|)"], 4)
+    vars_aux <- gsub(".{1}$", "", names(ctx_sev_binom_mult$qr$qr[2,]))
+    p_value_vars <- round(coef(summary(ctx_sev_binom_mult))[,"Pr(>|z|)"], 4)
     
-    fct_res_bin_mult(df_ctx, vars, p_value, "ctx_sev_binom_mult", 
+    fct_res_bin_mult(df_ctx, vars_aux, p_value_vars, "ctx_sev_binom_mult", 
                      switch_write_table = T)
   }
 }else{
@@ -287,7 +287,7 @@ agroup = 1
 
 ## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
 if(!is.null(ctx_ulc)){
-  df_ctx_ulc <- fct_mod_var_out_df(df_ctx, ctx_ulc, agroup, p_value)
+  df_ctx_ulc <- fct_mod_var_out_df(df_ctx, ctx_ulc, agroup, p_value = 0.05)
   ## Gerando dummies
   df_ctx_ulc_fast_dummies <-  fct_get_dummy_cols(df_ctx_ulc, debug)
   #### 3.1.1.2 Modelo com variantes selecionadas ----
@@ -312,10 +312,10 @@ if(!is.null(ctx_ulc)){
     fct_print_glm_xlsx(ctx_ulc_binom_mult, switch_write_table)
     
     ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
-    vars <- names(ctx_ulc_binom_mult$qr$qr[2,])
-    p_value <- round(coef(summary(ctx_ulc_binom_mult))[,"Pr(>|z|)"], 4)
+    vars_aux <- gsub(".{1}$", "", names(ctx_ulc_binom_mult$qr$qr[2,]))
+    p_value_vars <- round(coef(summary(ctx_ulc_binom_mult))[,"Pr(>|z|)"], 4)
     
-    fct_res_bin_mult(df_ctx, vars, p_value, "ctx_sev_binom_mult", 
+    fct_res_bin_mult(df_ctx, vars_aux, p_value_vars, "ctx_sev_binom_mult", 
                      switch_write_table = T)
   }
 }else{
@@ -332,7 +332,7 @@ agroup = 0
 
 ## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
 if(!is.null(doxo_pres_aus)){
-  df_doxo_pres_aus <- fct_mod_var_out_df(df_doxo, doxo_pres_aus, agroup, p_value)
+  df_doxo_pres_aus <- fct_mod_var_out_df(df_doxo, doxo_pres_aus, agroup, p_value = 0.05)
   ## Gerando dummies
   df_doxo_pres_aus_fast_dummies <-  fct_get_dummy_cols(df_doxo_pres_aus, debug)
   #### 3.2.1.2 Modelo com variantes selecionadas ----
@@ -358,10 +358,10 @@ if(!is.null(doxo_pres_aus)){
     fct_print_glm_xlsx(doxo_abs_or_pres_binom_mult, switch_write_table)
     
     ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
-    vars <- names(doxo_abs_or_pres_binom_mult$qr$qr[2,])
-    p_value <- round(coef(summary(doxo_abs_or_pres_binom_mult))[,"Pr(>|z|)"], 4)
+    vars_aux <- gsub(".{1}$", "", names(doxo_abs_or_pres_binom_mult$qr$qr[2,]))
+    p_value_vars <- round(coef(summary(doxo_abs_or_pres_binom_mult))[,"Pr(>|z|)"], 4)
     
-    fct_res_bin_mult(df_doxo, vars, p_value, "doxo_abs_or_pres_binom_mult", 
+    fct_res_bin_mult(df_doxo, vars_aux, p_value_vars, "doxo_abs_or_pres_binom_mult", 
                      switch_write_table = T)
   }
 }else{
@@ -377,7 +377,7 @@ agroup = 2
 
 ## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
 if(!is.null(doxo_sev)){
-  df_doxo_sev <- fct_mod_var_out_df(df_doxo, doxo_sev, agroup, p_value)
+  df_doxo_sev <- fct_mod_var_out_df(df_doxo, doxo_sev, agroup, p_value = 0.05)
   ## Gerando dummies
   df_doxo_sev_fast_dummies <-  fct_get_dummy_cols(df_doxo_sev, debug)
   #### 3.2.1.2 Modelo com variantes selecionadas ----
@@ -402,10 +402,10 @@ if(!is.null(doxo_sev)){
     fct_print_glm_xlsx(doxo_sev_binom_mult, switch_write_table)
     
     ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
-    vars <- names(doxo_sev_binom_mult$qr$qr[2,])
-    p_value <- round(coef(summary(doxo_sev_binom_mult))[,"Pr(>|z|)"], 4)
+    vars_aux <- gsub(".{1}$", "", names(doxo_sev_binom_mult$qr$qr[2,]))
+    p_value_vars <- round(coef(summary(doxo_sev_binom_mult))[,"Pr(>|z|)"], 4)
     
-    fct_res_bin_mult(df_doxo, vars, p_value, "doxo_sev_binom_mult", 
+    fct_res_bin_mult(df_doxo, vars_aux, p_value_vars, "doxo_sev_binom_mult", 
                      switch_write_table = T)
   }
 }else{
@@ -421,7 +421,7 @@ agroup = 1
 
 ## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
 if(!is.null(doxo_ulc)){
-  df_doxo_ulc <- fct_mod_var_out_df(df_doxo, doxo_ulc, agroup, p_value)
+  df_doxo_ulc <- fct_mod_var_out_df(df_doxo, doxo_ulc, agroup, p_value = 0.05)
   ## Gerando dummies
   df_doxo_ulc_fast_dummies <-  fct_get_dummy_cols(df_doxo_ulc, debug)
   #### 3.2.1.2 Modelo com variantes selecionadas ----
@@ -447,10 +447,10 @@ if(!is.null(doxo_ulc)){
     fct_print_glm_xlsx(doxo_ulc_binom_mult, switch_write_table)
     
     ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
-    vars <- names(doxo_ulc_binom_mult$qr$qr[2,])
-    p_value <- round(coef(summary(doxo_ulc_binom_mult))[,"Pr(>|z|)"], 4)
+    vars_aux <- gsub(".{1}$", "", names(doxo_ulc_binom_mult$qr$qr[2,]))
+    p_value_vars <- round(coef(summary(doxo_ulc_binom_mult))[,"Pr(>|z|)"], 4)
     
-    fct_res_bin_mult(df_doxo, vars, p_value, "doxo_ulc_binom_mult", 
+    fct_res_bin_mult(df_doxo, vars_aux, p_value_vars, "doxo_ulc_binom_mult", 
                      switch_write_table = T)
   }
 }else{
@@ -468,7 +468,7 @@ agroup = 0
 
 ## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
 if(!is.null(mtx_pres_aus)){
-  df_mtx_pres_aus <- fct_mod_var_out_df(df_mtx, mtx_pres_aus, agroup, p_value)
+  df_mtx_pres_aus <- fct_mod_var_out_df(df_mtx, mtx_pres_aus, agroup, p_value = 0.05)
   ## Gerando dummies
   df_mtx_pres_aus_fast_dummies <-  fct_get_dummy_cols(df_mtx_pres_aus, debug)
   #### 3.3.1.2 Modelo com variantes selecionadas ----
@@ -494,10 +494,10 @@ if(!is.null(mtx_pres_aus)){
     fct_print_glm_xlsx(mtx_abs_or_pres_binom_mult, switch_write_table)
     
     ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
-    vars <- names(mtx_abs_or_pres_binom_mult$qr$qr[2,])
-    p_value <- round(coef(summary(mtx_abs_or_pres_binom_mult))[,"Pr(>|z|)"], 4)
+    vars_aux <- gsub(".{1}$", "", names(mtx_abs_or_pres_binom_mult$qr$qr[2,]))
+    p_value_vars <- round(coef(summary(mtx_abs_or_pres_binom_mult))[,"Pr(>|z|)"], 4)
     
-    fct_res_bin_mult(df_mtx, vars, p_value, "mtx_abs_or_pres_binom_mult", 
+    fct_res_bin_mult(df_mtx, vars_aux, p_value_vars, "mtx_abs_or_pres_binom_mult", 
                      switch_write_table = T)
   }
 }else{
@@ -513,7 +513,7 @@ agroup = 2
 
 ## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
 if(!is.null(mtx_sev)){
-  df_mtx_sev <- fct_mod_var_out_df(df_mtx, mtx_sev, agroup, p_value)
+  df_mtx_sev <- fct_mod_var_out_df(df_mtx, mtx_sev, agroup, p_value = 0.05)
   ## Gerando dummies
   df_mtx_sev_fast_dummies <-  fct_get_dummy_cols(df_mtx_sev, debug)
   #### 3.3.1.2 Modelo com variantes selecionadas ----
@@ -537,10 +537,10 @@ if(!is.null(mtx_sev)){
     fct_print_glm_xlsx(mtx_sev_binom_mult, switch_write_table)
     
     ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
-    vars <- names(mtx_sev_binom_mult$qr$qr[2,])
-    p_value <- round(coef(summary(mtx_sev_binom_mult))[,"Pr(>|z|)"], 4)
+    vars_aux <- gsub(".{1}$", "", names(mtx_sev_binom_mult$qr$qr[2,]))
+    p_value_vars <- round(coef(summary(mtx_sev_binom_mult))[,"Pr(>|z|)"], 4)
     
-    fct_res_bin_mult(df_mtx, vars, p_value, "mtx_sev_binom_mult", 
+    fct_res_bin_mult(df_mtx, vars_aux, p_value_vars, "mtx_sev_binom_mult", 
                      switch_write_table = T)
   }
 }else{
@@ -556,7 +556,7 @@ agroup = 1
 
 ## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
 if(!is.null(mtx_ulc)){
-  df_mtx_ulc <- fct_mod_var_out_df(df_mtx, mtx_ulc, agroup, p_value)
+  df_mtx_ulc <- fct_mod_var_out_df(df_mtx, mtx_ulc, agroup, p_value = 0.05)
   ## Gerando dummies
   df_mtx_ulc_fast_dummies <-  fct_get_dummy_cols(df_mtx_ulc, debug)
   #### 3.3.1.2 Modelo com variantes selecionadas ----
@@ -581,10 +581,10 @@ if(!is.null(mtx_ulc)){
     fct_print_glm_xlsx(mtx_ulc_binom_mult, switch_write_table)
     
     ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
-    vars <- names(mtx_ulc_binom_mult$qr$qr[2,])
-    p_value <- round(coef(summary(mtx_ulc_binom_mult))[,"Pr(>|z|)"], 4)
+    vars_aux <- gsub(".{1}$", "", names(mtx_ulc_binom_mult$qr$qr[2,]))
+    p_value_vars <- round(coef(summary(mtx_ulc_binom_mult))[,"Pr(>|z|)"], 4)
     
-    fct_res_bin_mult(df_mtx, vars, p_value, "mtx_ulc_binom_mult", 
+    fct_res_bin_mult(df_mtx, vars_aux, p_value_vars, "mtx_ulc_binom_mult", 
                      switch_write_table = T)
   }
 }else{
@@ -602,7 +602,7 @@ agroup = 0
 
 ## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
 if(!is.null(out_pres_aus)){
-  df_out_pres_aus <- fct_mod_var_out_df(df_out, out_pres_aus, agroup, p_value)
+  df_out_pres_aus <- fct_mod_var_out_df(df_out, out_pres_aus, agroup, p_value = 0.05)
   ## Gerando dummies
   df_out_pres_aus_fast_dummies <-  fct_get_dummy_cols(df_out_pres_aus, debug)
   #### 3.4.1.2 Modelo com variantes selecionadas ----
@@ -627,10 +627,10 @@ if(!is.null(out_pres_aus)){
     fct_print_glm_xlsx(out_abs_or_pres_binom_mult, switch_write_table)
     
     ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
-    vars <- names(out_abs_or_pres_binom_mult$qr$qr[2,])
-    p_value <- round(coef(summary(out_abs_or_pres_binom_mult))[,"Pr(>|z|)"], 4)
+    vars_aux <- gsub(".{1}$", "", names(out_abs_or_pres_binom_mult$qr$qr[2,]))
+    p_value_vars <- round(coef(summary(out_abs_or_pres_binom_mult))[,"Pr(>|z|)"], 4)
     
-    fct_res_bin_mult(df_out, vars, p_value, "out_abs_or_pres_binom_mult", 
+    fct_res_bin_mult(df_out, vars_aux, p_value_vars, "out_abs_or_pres_binom_mult", 
                      switch_write_table = T)
   }
 }else{
@@ -646,7 +646,7 @@ agroup = 2
 
 ## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
 if(!is.null(out_sev)){
-  df_out_sev <- fct_mod_var_out_df(df_out, out_sev, agroup, p_value)
+  df_out_sev <- fct_mod_var_out_df(df_out, out_sev, agroup, p_value = 0.05)
   ## Gerando dummies
   df_out_sev_fast_dummies <-  fct_get_dummy_cols(df_out_sev, debug)
   #### 3.4.1.2 Modelo com variantes selecionadas ----
@@ -670,10 +670,10 @@ if(!is.null(out_sev)){
     fct_print_glm_xlsx(out_sev_binom_mult, switch_write_table)
     
     ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
-    vars <- names(out_sev_binom_mult$qr$qr[2,])
-    p_value <- round(coef(summary(out_sev_binom_mult))[,"Pr(>|z|)"], 4)
+    vars_aux <- gsub(".{1}$", "", names(out_sev_binom_mult$qr$qr[2,]))
+    p_value_vars <- round(coef(summary(out_sev_binom_mult))[,"Pr(>|z|)"], 4)
     
-    fct_res_bin_mult(df_out, vars, p_value, "out_sev_binom_mult", 
+    fct_res_bin_mult(df_out, vars_aux, p_value_vars, "out_sev_binom_mult", 
                      switch_write_table = T)
   }
 }else{
@@ -689,7 +689,7 @@ agroup = 1
 
 ## Check para ver se existe alguma variante na seleção, senão existir, o modelo não será rodado
 if(!is.null(out_ulc)){
-  df_out_ulc <- fct_mod_var_out_df(df_out, out_ulc, agroup, p_value)
+  df_out_ulc <- fct_mod_var_out_df(df_out, out_ulc, agroup, p_value = 0.05)
   ## Gerando dummies
   df_out_ulc_fast_dummies <-  fct_get_dummy_cols(df_out_ulc, debug)
   #### 3.4.1.2 Modelo com variantes selecionadas ----
@@ -715,10 +715,10 @@ if(!is.null(out_ulc)){
     fct_print_glm_xlsx(out_ulc_binom_mult, switch_write_table)
     
     ## por algum motivo deu pau passando por parâmetro, vou tentar jogar aqui
-    vars <- names(out_ulc_binom_mult$qr$qr[2,])
-    p_value <- round(coef(summary(out_ulc_binom_mult))[,"Pr(>|z|)"], 4)
+    vars_aux <- gsub(".{1}$", "", names(out_ulc_binom_mult$qr$qr[2,]))
+    p_value_vars <- round(coef(summary(out_ulc_binom_mult))[,"Pr(>|z|)"], 4)
     
-    fct_res_bin_mult(df_out, vars, p_value, "out_ulc_binom_mult", 
+    fct_res_bin_mult(df_out, vars_aux, p_value_vars, "out_ulc_binom_mult", 
                      switch_write_table = T)
   }
 }else{

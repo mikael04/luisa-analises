@@ -1,7 +1,9 @@
 ################################################################# #
 ##' Script para criar tabela com saídas da reg binomial múltipla
-##' 1 - retornar apenas variantes do modelo selecionado
-##' 2 - Escrever tabela de resultados da binomial completa
+##' 1 - Resolver o problema do nome da variante gerado pelo fast_dummies
+##' 2 - Separa o nome das variantes em um df com colunas
+##' 3 - retornar apenas variantes do modelo selecionado
+##' 4 - Escrever tabela de resultados da binomial completa
 ##' 
 ##' Autores: Mikael e Matheus
 ##' Data: 08/10/2022
@@ -11,32 +13,40 @@
 
 # 1 - Funções ----
 ## 1.1 - vars_pvalue ----
-## Recebe o modelo, separa o nome das variantes em um df com colunas
+## Separa o nome das variantes em um df com colunas
+fct_fix_dummy_names <- function(vars_aux, fix_names, debug){
+  if(fix_names){
+    vars_aux <- gsub(".{1}$", "", vars_aux)
+  }
+}
+
+## 1.2 - vars_pvalue ----
+## Separa o nome das variantes em um df com colunas
 ## gene, variante, genótipo, gene_variante_genótipo e p-valor
-fct_vars_pvalue <- function(vars, p_value, debug){
+fct_vars_pvalue <- function(vars, p_value_vars, debug){
   teste_interno <- F
   if(teste_interno){
-    model <- ctx_abs_or_pres_binom_mult
+    # model <- ctx_abs_or_pres_binom_mult
   }
   ## Buscando dados do objeto do modelo
   # vars <- names(model$qr$qr[2,])
   # browser()
-  # p_value <- round(coef(summary(model))[,"Pr(>|z|)"], 4)
+  # p_value_vars <- round(coef(summary(model))[,"Pr(>|z|)"], 4)
   ## Removendo constante
-  vars <- vars[-c(1)]
-  p_value <- p_value[-c(1)]
+  vars_ <- vars[-c(1)]
+  p_value_vars_ <- p_value_vars[-c(1)]
   # browser()
   
   ## Criando tabela de variante separado por colunas, e com última coluna para futuro join
-  vars_aux <- as.data.frame(stringr::str_split_fixed(vars, "_", n = 4), stringsAsFactors = F) |> 
+  vars_aux <- as.data.frame(stringr::str_split_fixed(vars_, "_", n = 4), stringsAsFactors = F) |> 
     dplyr::rename(Gene = 1, Variant = 2, Model = 3, dummy = 4) |> 
     # tidyr::separate(Model_dum, into = c("Model", "dummy"), sep = 2) |> 
     dplyr::mutate(gene_variant_model = paste0(Gene, "_", Variant, "_", Model))
   
-  cbind(vars_aux, p_value)
+  cbind(vars_aux, p_value_vars_)
 }
 
-## 1.2 -Cria dataframe usado para o join (genótipo e dummie)  ----
+## 1.3 - Cria dataframe usado para o join (genótipo e dummie)  ----
 ## Recebe o dataframe separado apenas com variantes selecionadas
 ## retorna um df com os genes, variantes e seus diferentes genótipos
 fct_list_var_geno_dummy <- function(df_all_vars, df_vars_pvalue, debug){
@@ -54,9 +64,13 @@ fct_list_var_geno_dummy <- function(df_all_vars, df_vars_pvalue, debug){
     var <- gsub(pattern = '.{1}$', "", vars[i])
     df_aux <- df_all_vars |> 
       dplyr::select(dplyr::contains(var)) |> 
-      dplyr::distinct()
+      dplyr::distinct() |> 
+      dplyr::group_by(!!as.name(paste0(vars[i]))) |> 
+      # dplyr::mutate(!!as.name(paste0(var, "O", "_aux")) = paste0(.))
+      dplyr::summarise(model_aux = stringr::str_c(!!as.name(paste0(var, "O")), collapse = " or "))
+    
     df_aux <- df_aux |>
-      dplyr::select(!!as.name(paste0(var, "O")), all_of(names(df_aux))) |> 
+      dplyr::select(model_aux, all_of(names(df_aux))) |> 
       dplyr::rename(genotype = 1, dummy = 2) |> 
       ## Ifelse pq quero renomear as colunas, porém algumas (com final "MA" e "MD" vem antes de MO,
       ## Outras ("MR" e MU") vem depois)
@@ -68,11 +82,12 @@ fct_list_var_geno_dummy <- function(df_all_vars, df_vars_pvalue, debug){
     
     df_auxx <- dplyr::inner_join(df_vars_pvalue, df_aux, by=c("gene_variant_model", "dummy"))
     df_dummy_base <- dplyr::anti_join(df_aux, df_vars_pvalue, by=c("gene_variant_model", "dummy")) |> 
-      dplyr::rename(dummy_base = dummy, genotype_base = genotype)
+      dplyr::rename(dummy_base = dummy, genotype_base = genotype) |> 
+      dplyr::filter(dummy_base == 0)
     
     df_auxxx <- dplyr::left_join(df_auxx, df_dummy_base, by=c("gene_variant_model")) |> 
       dplyr::select(Gene, Variant, Model, dummy_base, genotype_base, dummy, genotype,
-                    p_value)
+                    p_value = p_value_vars_)
     
     # ## i <- 3 problemático porque temos mais de dois níveis, lidar com ele
     # if(nrow(df_aux) != nrow(df_aux_t)){
@@ -84,22 +99,26 @@ fct_list_var_geno_dummy <- function(df_all_vars, df_vars_pvalue, debug){
 }
 
 
-## 1.3 - Resultado da binomial múltipla ----
+## 1.4 - Resultado da binomial múltipla ----
 ## Vai receber o df do protocolo selecionado, o modelo e o nome do modelo
 ## Fará primeiro o join da tabela já filtrada com os genótipos e suas dummies
 ## Para ter o gene base + a variação, e pode escrever isso na tabela de resultados
-fct_res_bin_mult <- function(df, vars, p_value, model_name, switch_write_table){
+fct_res_bin_mult <- function(df, vars, p_value_vars, model_name, switch_write_table){
   teste_interno <- F
   if(teste_interno){
+    ## Lembrar de usar o modelo que está sendo testado para os valores ##
     model <- ctx_abs_or_pres_binom_mult
     df <- df_ctx
     model_name <- "ctx_abs_or_pres_binom_mult"
+    vars <- gsub(".{1}$", "", names(ctx_abs_or_pres_binom_mult$qr$qr[2,]))
+    p_value_vars <- round(coef(summary(ctx_abs_or_pres_binom_mult))[,"Pr(>|z|)"], 4)
+    switch_write_table = T
     # model_
   }
   ## Recebendo tabela \
   # browser()
   
-  df_vars_pvalue <- fct_vars_pvalue(vars, p_value, debug = F)
+  df_vars_pvalue <- fct_vars_pvalue(vars, p_value_vars, debug = F)
   rownames(df_vars_pvalue) <- NULL
   
   ## Separando nomes de coluna, coluna com nome do genótipo e com valor da dummy
@@ -132,4 +151,3 @@ fct_res_bin_mult <- function(df, vars, p_value, model_name, switch_write_table){
     writexl::write_xlsx(df_bin_mult, path_write)
   }
 }
-
