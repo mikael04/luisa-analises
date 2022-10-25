@@ -275,7 +275,7 @@ if(!is.null(ctx_sev)){
                      switch_write_table = T)
   }
 }else{
-  print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo CTX")
+  print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento severidade, protocolo CTX")
 }
 
 ### 3.1.3 - Ulcerações ----
@@ -315,7 +315,7 @@ if(!is.null(ctx_ulc)){
     vars_aux <- gsub(".{1}$", "", names(ctx_ulc_binom_mult$qr$qr[2,]))
     p_value_vars <- round(coef(summary(ctx_ulc_binom_mult))[,"Pr(>|z|)"], 4)
     
-    fct_res_bin_mult(df_ctx, vars_aux, p_value_vars, "ctx_sev_binom_mult", 
+    fct_res_bin_mult(df_ctx, vars_aux, p_value_vars, "ctx_ulc_binom_mult", 
                      switch_write_table = T)
   }
 }else{
