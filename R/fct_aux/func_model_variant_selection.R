@@ -80,12 +80,15 @@ fct_mod_var_out_df <- function(df_protocol, vars_selected, agroup, p_value){
   teste_interno <- F
   if(teste_interno){
     df_protocol <- df_ctx
-    vars_selected <- fct_mod_var_ctx_pres()
+    vars_selected <- ctx_ulc
     agroup = 0
     p_value = 0.05
   }
   ### 1 - Variantes MU selecionadas por p-valor ----
-  #### DF agrupado para nao severo (PIORMB = 0, 1, 2) ou severo (PIORMB = 3, 4)
+  #### DF agrupado conforme agrupamento
+  #### ausência/presença (0/1,2,3,4)
+  #### ulceração (0 e 1 para Não, 2,3 e 4 para Sim)
+  #### severidade (0, 1 e 2 para Não, 3 e 4 para Sim)
   df_protocol_MU <- df_protocol |> 
     dplyr::select(PIORMB, dplyr::ends_with("MU")) |> 
     dplyr::mutate(PIORMB = ifelse(PIORMB > agroup, 1, 0))
@@ -97,13 +100,13 @@ fct_mod_var_out_df <- function(df_protocol, vars_selected, agroup, p_value){
     ## Testes com e sem simulação de Monte Carlo
     df_chi2_MU <- list_testes[[2]]
   }
-  
   #### Variáveis selecionadas MU
   vars_MU_selected <- df_chi2_MU |> 
     dplyr::filter(`p-value(Chi-2)-MC` < p_value) |> 
     dplyr::select(variant) |> 
     dplyr::pull()
   
+  # browser()
   ### 2 - Seleção de variantes e agrupamento (presença ausencia nesse caso) ----
   ### Selcionando variáveis MU com p-valor definido e as variáveis recebidas
   df_protocol_agr <-  df_protocol |> 
