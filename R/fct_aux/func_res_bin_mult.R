@@ -112,6 +112,7 @@ fct_res_bin_mult <- function(df, vars, p_value_vars, model_name, switch_write_ta
     vars <- gsub(".{1}$", "", names(ctx_abs_or_pres_binom_mult$qr$qr[2,]))
     p_value_vars <- round(coef(summary(ctx_abs_or_pres_binom_mult))[,"Pr(>|z|)"], 4)
     switch_write_table = T
+    df_conf <- as.data.frame(exp(confint(ctx_abs_or_pres_binom_mult)))
   }
   ## Recebendo tabela 
   # browser()
@@ -128,6 +129,7 @@ fct_res_bin_mult <- function(df, vars, p_value_vars, model_name, switch_write_ta
   df_all_vars <- df |> 
     dplyr::select(all_of(vars_selected)) |> 
     dplyr::distinct(across(all_of(vars_selected)))
+  
   
   ## Separando dfs por variante
   df_bin_mult <- fct_list_var_geno_dummy(df_all_vars, df_vars_pvalue, debug = F)
