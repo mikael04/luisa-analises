@@ -29,7 +29,7 @@ use_MC <- T
 
 options(dplyr.summarise.inform = FALSE)
 switch_teste <- F
-switch_write_table <- T
+switch_write_table <- F
 switch_write_binom <- F
 switch_overwrite_binom <- F
 

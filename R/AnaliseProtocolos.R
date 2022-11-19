@@ -234,7 +234,6 @@ if(!is.null(ctx_pres_aus)){
 }else{
   print("Modelo não será gerado, não existem variantes selecionadas para o agrupamento presença ou ausência, protocolo CTX")
 }
-
 ### 3.1.2 - Severidade ----
 #### 3.1.2.1 - Variantes selecionadas pela cliente (MA, MD, MR) ----
 ctx_sev <- fct_mod_var_ctx_sev()
@@ -478,17 +477,37 @@ if(!is.null(mtx_pres_aus)){
   print(step(mtx_abs_or_pres_binom_mult)) # Poderia criar uma função para remover uma variante por vez, mas
   # acho que resultaria nisso de qualquer forma.
   
-  ## Modelo com variantes sugeridas pelo step
+  ## Modelo com variantes sugeridas pelo step ANTEPENULTIMA
   print(summary(mtx_abs_or_pres_binom_mult <- glm(
-    PIORMB ~ ABCC1_rs35587_MR_1 + ABCC2_rs3740066_MR_1 + 
-      ABCC4_rs2274405_MA_1 + ABCC6_rs12931472_MA_1 + CYP2A7_rs4142867_MD_1 + 
-      GSTM1_rs1056806_MR_1 + ABCA3_rs1319979593_MU_1,
+    PIORMB ~ ABCC1_rs35587_MR_1 + ABCC2_rs2273697_MD_1 + 
+      ABCC2_rs3740066_MR_1 + ABCC3_rs1051640_MD_1 + ABCC3_rs2277624_MD_1 + 
+      ABCC4_rs2274405_MA_1 + ABCC4_rs2274406_MA_1 + ABCC6_rs12931472_MA_1 + 
+      CYP2A7_rs4142867_MD_1 + GSTM1_rs1056806_MR_1 + GSTM1_rs147668562_MD_1 + 
+      GSTP1_rs4891_MD_1 + MTHFR_rs4846051_MD_1 + SLC19A1_rs12659_MD_1 + 
+      SLCO6A1_rs10055840_MD_1 + SLCO6A1_rs6884141_MA_1 + ABCA3_rs149532_MU_1 + ABCC2_rs17222723_MU_1 + 
+      ABCC2_rs8187707_MU_1 + ABCC2_rs8187710_MU_1 + ABCC3_chr1750683660_MU_1 + 
+      ABCC3_rs11568591_MU_1 + CCND1_rs1181031465_MU_1
+    ## removidos a pedido
+    ## ABCA3_rs1319979593_MU_1 + TPRA1_chr3127579846_MD_1
+    ,
     data = df_mtx_pres_aus_fast_dummies, family = "binomial")))
   
-  ## Modelo apenas com variantes significativas (a partir do modelo step)
+  # ## Modelo apenas com variantes significativas (a partir do modelo step) (Removendo apenas ABCA3)
+  # 
+  # print(summary(mtx_abs_or_pres_binom_mult <- glm(
+  #   PIORMB ~ ABCC1_rs35587_MR_1 + TPRA1_chr3127579846_MD_1 +
+  #     ABCA3_rs149532_MU_1 + ABCC3_chr1750683660_MU_1,
+  #   data = df_mtx_pres_aus_fast_dummies, family = "binomial")))
+  # with(summary(mtx_abs_or_pres_binom_mult), 1 - deviance/null.deviance)
+  
+  ## Modelo com variantes significativas (a partir do modelo step) (Removendo ABCA3 e TPRA1)
+  
   print(summary(mtx_abs_or_pres_binom_mult <- glm(
-    PIORMB ~ ABCC2_rs3740066_MR_1 + ABCA3_rs1319979593_MU_1,
+    PIORMB ~ ABCC2_rs2273697_MD_1 + ABCC4_rs2274406_MA_1 +  
+      GSTM1_rs1056806_MR_1 + ABCC2_rs17222723_MU_1,
     data = df_mtx_pres_aus_fast_dummies, family = "binomial")))
+  
+  # with(summary(mtx_abs_or_pres_binom_mult), 1 - deviance/null.deviance)
   
   if(switch_write_table){
     fct_print_glm_xlsx(mtx_abs_or_pres_binom_mult, switch_write_table)
