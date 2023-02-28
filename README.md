@@ -2,7 +2,7 @@
 
 ## Introdução
 
-Esta consultoria foi prestada à uma pesquisadora de doutorado, cujo intuito era avaliar a relação entre variantes genéticas, protocolos de medicações utilizados e o desfecho clínico (mucosite bucal.
+Esta consultoria foi prestada à uma pesquisadora de doutorado, cujo intuito era avaliar a relação entre variantes genéticas, protocolos de medicações utilizados e o desfecho clínico (mucosite bucal) associado com linfoma.
 
 ## Análises estatísticas
 
